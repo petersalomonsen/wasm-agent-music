@@ -77,8 +77,8 @@ export class PadleadDsp {
     fSampleRate: i32;
     iVec4: StaticArray<i32> = new StaticArray<i32>(2);
     fVec140: StaticArray<f32> = new StaticArray<f32>(2);
-    fVec1264: StaticArray<f32> = new StaticArray<f32>(2);
-    fVec1268: StaticArray<f32> = new StaticArray<f32>(4096);
+    fVec1265: StaticArray<f32> = new StaticArray<f32>(2);
+    fVec1269: StaticArray<f32> = new StaticArray<f32>(4096);
     fConst0: f32;
     fHslider0: f32;
     fSlow0: f32;
@@ -120,16 +120,16 @@ export class PadleadDsp {
     fConst12: f32;
     fSlow21: f32;
     fConst13: f32;
-    fRec1163: StaticArray<f32> = new StaticArray<f32>(2);
-    fRec1163_1: StaticArray<f32> = new StaticArray<f32>(2);
-    fRec1176: StaticArray<f32> = new StaticArray<f32>(2);
-    fRec1176_1: StaticArray<f32> = new StaticArray<f32>(2);
-    fRec1190: StaticArray<f32> = new StaticArray<f32>(2);
-    fRec1190_1: StaticArray<f32> = new StaticArray<f32>(2);
-    fRec1136: f32;
-    fRec1287: StaticArray<f32> = new StaticArray<f32>(3);
-    fRec1201: f32;
-    iRec1211: i32;
+    fRec1164: StaticArray<f32> = new StaticArray<f32>(2);
+    fRec1164_1: StaticArray<f32> = new StaticArray<f32>(2);
+    fRec1177: StaticArray<f32> = new StaticArray<f32>(2);
+    fRec1177_1: StaticArray<f32> = new StaticArray<f32>(2);
+    fRec1191: StaticArray<f32> = new StaticArray<f32>(2);
+    fRec1191_1: StaticArray<f32> = new StaticArray<f32>(2);
+    fRec1137: f32;
+    fRec1288: StaticArray<f32> = new StaticArray<f32>(3);
+    fRec1202: f32;
+    iRec1212: i32;
     fIOTA: i32;
 
     getSampleRate(): i32 {
@@ -155,7 +155,7 @@ export class PadleadDsp {
     instanceResetUserInterface(): void {
         this.fHslider0 = 440.0;
         this.fButton1 = 0.0;
-        this.fHslider2 = 0.6000000238418579;
+        this.fHslider2 = 1.2000000476837158;
     }
     instanceClear(): void {
         for (let lDelay0: i32 = 0; lDelay0 < <i32>(2); lDelay0 = lDelay0 + 1) {
@@ -165,35 +165,35 @@ export class PadleadDsp {
             this.fVec140[lDelay1] = 0.0;
         }
         for (let lDelay2: i32 = 0; lDelay2 < <i32>(2); lDelay2 = lDelay2 + 1) {
-            this.fVec1264[lDelay2] = 0.0;
+            this.fVec1265[lDelay2] = 0.0;
         }
         for (let lDelay3: i32 = 0; lDelay3 < <i32>(4096); lDelay3 = lDelay3 + 1) {
-            this.fVec1268[lDelay3] = 0.0;
+            this.fVec1269[lDelay3] = 0.0;
         }
         for (let lRec4: i32 = 0; lRec4 < <i32>(2); lRec4 = lRec4 + 1) {
-            this.fRec1163[lRec4] = 0.0;
+            this.fRec1164[lRec4] = 0.0;
         }
         for (let lRec5: i32 = 0; lRec5 < <i32>(2); lRec5 = lRec5 + 1) {
-            this.fRec1163_1[lRec5] = 0.0;
+            this.fRec1164_1[lRec5] = 0.0;
         }
         for (let lRec6: i32 = 0; lRec6 < <i32>(2); lRec6 = lRec6 + 1) {
-            this.fRec1176[lRec6] = 0.0;
+            this.fRec1177[lRec6] = 0.0;
         }
         for (let lRec7: i32 = 0; lRec7 < <i32>(2); lRec7 = lRec7 + 1) {
-            this.fRec1176_1[lRec7] = 0.0;
+            this.fRec1177_1[lRec7] = 0.0;
         }
         for (let lRec8: i32 = 0; lRec8 < <i32>(2); lRec8 = lRec8 + 1) {
-            this.fRec1190[lRec8] = 0.0;
+            this.fRec1191[lRec8] = 0.0;
         }
         for (let lRec9: i32 = 0; lRec9 < <i32>(2); lRec9 = lRec9 + 1) {
-            this.fRec1190_1[lRec9] = 0.0;
+            this.fRec1191_1[lRec9] = 0.0;
         }
-        this.fRec1136 = 0.0;
+        this.fRec1137 = 0.0;
         for (let lRec16: i32 = 0; lRec16 < <i32>(3); lRec16 = lRec16 + 1) {
-            this.fRec1287[lRec16] = 0.0;
+            this.fRec1288[lRec16] = 0.0;
         }
-        this.fRec1201 = 0.0;
-        this.iRec1211 = <i32>(0);
+        this.fRec1202 = 0.0;
+        this.iRec1212 = <i32>(0);
         this.fIOTA = <i32>(0);
     }
     instanceConstants(sample_rate: i32): void {
@@ -245,68 +245,68 @@ export class PadleadDsp {
         this.iSlow1 = <i32>(this.fSlow14);
         this.iSlow2 = (this.iSlow1 + <i32>(1));
         this.fSlow18 = <f32>(this.fHslider2);
-        this.fSlow19 = (1.2999999523162842 * this.fSlow18);
-        this.fSlow20 = (1.0399999618530273 * this.fSlow18);
+        this.fSlow19 = (1.7999999523162842 * this.fSlow18);
+        this.fSlow20 = (2.1600000858306885 * this.fSlow18);
         this.fSlow21 = (this.fConst12 / this.fSlow12);
     }
     frame(inputs: StaticArray<f32>, outputs: StaticArray<f32>): void {
-        let fTemp0: f32 = this.fRec1163[<i32>(1)];
+        let fTemp0: f32 = this.fRec1164[<i32>(1)];
         let fTemp1: f32 = (this.fSlow4 + (fTemp0 - 1.0));
         let iTemp0: i32 = (fTemp1 < 0.0);
         let fTemp2: f32 = (this.fSlow4 + fTemp0);
-        let fTemp3: f32 = this.fRec1176[<i32>(1)];
+        let fTemp3: f32 = this.fRec1177[<i32>(1)];
         let fTemp4: f32 = (this.fSlow6 + (fTemp3 - 1.0));
         let iTemp1: i32 = (fTemp4 < 0.0);
         let fTemp5: f32 = (this.fSlow6 + fTemp3);
-        let fTemp6: f32 = this.fRec1190[<i32>(1)];
+        let fTemp6: f32 = this.fRec1191[<i32>(1)];
         let fTemp7: f32 = (this.fSlow9 + (fTemp6 - 1.0));
         let iTemp2: i32 = (fTemp7 < 0.0);
         let fTemp8: f32 = (this.fSlow9 + fTemp6);
         this.iVec4[<i32>(0)] = <i32>(1);
         let iTemp3: i32 = this.iVec4[<i32>(1)];
-        let fTemp9: f32 = ((<i32>(1) - iTemp3) ? 0.0 : (this.fSlow13 + this.fRec1136));
-        let fRecCur1136: f32 = (fTemp9 - Mathf.floor(fTemp9));
-        let fTemp10: f32 = Mathf.pow(((2.0 * fRecCur1136) - 1.0), 2.0);
-        this.fVec1264[<i32>(0)] = fTemp10;
-        let fTemp11: f32 = (this.fSlow21 * (<f32>(iTemp3) * (fTemp10 - this.fVec1264[<i32>(1)])));
-        this.fVec1268[(this.fIOTA & <i32>(4095))] = fTemp11;
+        let fTemp9: f32 = ((<i32>(1) - iTemp3) ? 0.0 : (this.fSlow13 + this.fRec1137));
+        let fRecCur1137: f32 = (fTemp9 - Mathf.floor(fTemp9));
+        let fTemp10: f32 = Mathf.pow(((2.0 * fRecCur1137) - 1.0), 2.0);
+        this.fVec1265[<i32>(0)] = fTemp10;
+        let fTemp11: f32 = (this.fSlow21 * (<f32>(iTemp3) * (fTemp10 - this.fVec1265[<i32>(1)])));
+        this.fVec1269[(this.fIOTA & <i32>(4095))] = fTemp11;
         let fRecBody10: f32 = (iTemp0 ? fTemp2 : fTemp1);
         let fRecBody11: f32 = (iTemp0 ? fTemp2 : (this.fSlow4 + (fTemp0 + (this.fSlow2 * fTemp1))));
-        this.fRec1163[<i32>(0)] = fRecBody10;
-        this.fRec1163_1[<i32>(0)] = fRecBody11;
+        this.fRec1164[<i32>(0)] = fRecBody10;
+        this.fRec1164_1[<i32>(0)] = fRecBody11;
         let fRecBody12: f32 = (iTemp1 ? fTemp5 : fTemp4);
         let fRecBody13: f32 = (iTemp1 ? fTemp5 : (this.fSlow6 + (fTemp3 + (this.fSlow7 * fTemp4))));
-        this.fRec1176[<i32>(0)] = fRecBody12;
-        this.fRec1176_1[<i32>(0)] = fRecBody13;
+        this.fRec1177[<i32>(0)] = fRecBody12;
+        this.fRec1177_1[<i32>(0)] = fRecBody13;
         let fRecBody14: f32 = (iTemp2 ? fTemp8 : fTemp7);
         let fRecBody15: f32 = (iTemp2 ? fTemp8 : (this.fSlow9 + (fTemp6 + (this.fSlow10 * fTemp7))));
-        this.fRec1190[<i32>(0)] = fRecBody14;
-        this.fRec1190_1[<i32>(0)] = fRecBody15;
+        this.fRec1191[<i32>(0)] = fRecBody14;
+        this.fRec1191_1[<i32>(0)] = fRecBody15;
         this.fVec140[<i32>(0)] = this.fSlow3;
-        let fRecCur1201: f32 = (this.fSlow3 + (this.fRec1201 * <f32>((this.fVec140[<i32>(1)] >= this.fSlow3))));
-        let iRecCur1211: i32 = (this.iSlow0 * (this.iRec1211 + <i32>(1)));
-        let fTemp12: f32 = <f32>(iRecCur1211);
-        let fTemp13: f32 = Mathf.tan((this.fConst8 * ((4000.0 * max<f32>((min<f32>((this.fConst4 * fRecCur1201), max<f32>(((this.fConst6 * (this.fConst3 - fRecCur1201)) + 1.0), 0.6000000238418579)) * (1.0 - (this.fConst7 * fTemp12))), 0.0)) + 300.0)));
+        let fRecCur1202: f32 = (this.fSlow3 + (this.fRec1202 * <f32>((this.fVec140[<i32>(1)] >= this.fSlow3))));
+        let iRecCur1212: i32 = (this.iSlow0 * (this.iRec1212 + <i32>(1)));
+        let fTemp12: f32 = <f32>(iRecCur1212);
+        let fTemp13: f32 = Mathf.tan((this.fConst8 * ((4000.0 * max<f32>((min<f32>((this.fConst4 * fRecCur1202), max<f32>(((this.fConst6 * (this.fConst3 - fRecCur1202)) + 1.0), 0.6000000238418579)) * (1.0 - (this.fConst7 * fTemp12))), 0.0)) + 300.0)));
         let fTemp14: f32 = (1.0 / fTemp13);
-        let fTemp15: f32 = this.fRec1287[<i32>(1)];
+        let fTemp15: f32 = this.fRec1288[<i32>(1)];
         let fTemp16: f32 = (((fTemp14 + 0.5) / fTemp13) + 1.0);
-        this.fRec1287[<i32>(0)] = ((0.3125 * ((0.25 * (fTemp11 - ((this.fSlow17 * this.fVec1268[((this.fIOTA - this.iSlow1) & <i32>(4095))]) + (this.fSlow16 * this.fVec1268[((this.fIOTA - this.iSlow2) & <i32>(4095))])))) - ((2.0 * (1.0 - ((this.fRec1163_1[<i32>(0)] + this.fRec1176_1[<i32>(0)]) + this.fRec1190_1[<i32>(0)]))) + 1.0))) - (((this.fRec1287[<i32>(2)] * (((fTemp14 - 0.5) / fTemp13) + 1.0)) + (2.0 * (fTemp15 * (1.0 - (1.0 / Mathf.pow(fTemp13, 2.0)))))) / fTemp16));
-        let fTemp17: f32 = (((this.fRec1287[<i32>(0)] + (2.0 * this.fRec1287[<i32>(1)])) + this.fRec1287[<i32>(2)]) * max<f32>((min<f32>((this.fConst10 * fRecCur1201), max<f32>(((this.fConst11 * (this.fConst9 - fRecCur1201)) + 1.0), 0.800000011920929)) * (1.0 - (this.fConst13 * fTemp12))), 0.0));
+        this.fRec1288[<i32>(0)] = ((0.3125 * ((0.25 * (fTemp11 - ((this.fSlow17 * this.fVec1269[((this.fIOTA - this.iSlow1) & <i32>(4095))]) + (this.fSlow16 * this.fVec1269[((this.fIOTA - this.iSlow2) & <i32>(4095))])))) - ((2.0 * (1.0 - ((this.fRec1164_1[<i32>(0)] + this.fRec1177_1[<i32>(0)]) + this.fRec1191_1[<i32>(0)]))) + 1.0))) - (((this.fRec1288[<i32>(2)] * (((fTemp14 - 0.5) / fTemp13) + 1.0)) + (2.0 * (fTemp15 * (1.0 - (1.0 / Mathf.pow(fTemp13, 2.0)))))) / fTemp16));
+        let fTemp17: f32 = (((this.fRec1288[<i32>(0)] + (2.0 * this.fRec1288[<i32>(1)])) + this.fRec1288[<i32>(2)]) * max<f32>((min<f32>((this.fConst10 * fRecCur1202), max<f32>(((this.fConst11 * (this.fConst9 - fRecCur1202)) + 1.0), 0.800000011920929)) * (1.0 - (this.fConst13 * fTemp12))), 0.0));
         outputs[<i32>(0)] = <f32>((this.fSlow20 * (fTemp17 / (fTemp16 * (Mathf.abs((this.fSlow19 * (fTemp17 / fTemp16))) + 1.0)))));
         this.iVec4[<i32>(1)] = this.iVec4[<i32>(0)];
-        this.fRec1136 = fRecCur1136;
-        this.fVec1264[<i32>(1)] = this.fVec1264[<i32>(0)];
-        this.fRec1163[<i32>(1)] = this.fRec1163[<i32>(0)];
-        this.fRec1163_1[<i32>(1)] = this.fRec1163_1[<i32>(0)];
-        this.fRec1176[<i32>(1)] = this.fRec1176[<i32>(0)];
-        this.fRec1176_1[<i32>(1)] = this.fRec1176_1[<i32>(0)];
-        this.fRec1190[<i32>(1)] = this.fRec1190[<i32>(0)];
-        this.fRec1190_1[<i32>(1)] = this.fRec1190_1[<i32>(0)];
+        this.fRec1137 = fRecCur1137;
+        this.fVec1265[<i32>(1)] = this.fVec1265[<i32>(0)];
+        this.fRec1164[<i32>(1)] = this.fRec1164[<i32>(0)];
+        this.fRec1164_1[<i32>(1)] = this.fRec1164_1[<i32>(0)];
+        this.fRec1177[<i32>(1)] = this.fRec1177[<i32>(0)];
+        this.fRec1177_1[<i32>(1)] = this.fRec1177_1[<i32>(0)];
+        this.fRec1191[<i32>(1)] = this.fRec1191[<i32>(0)];
+        this.fRec1191_1[<i32>(1)] = this.fRec1191_1[<i32>(0)];
         this.fVec140[<i32>(1)] = this.fVec140[<i32>(0)];
-        this.fRec1201 = fRecCur1201;
-        this.iRec1211 = iRecCur1211;
-        this.fRec1287[<i32>(2)] = this.fRec1287[<i32>(1)];
-        this.fRec1287[<i32>(1)] = this.fRec1287[<i32>(0)];
+        this.fRec1202 = fRecCur1202;
+        this.iRec1212 = iRecCur1212;
+        this.fRec1288[<i32>(2)] = this.fRec1288[<i32>(1)];
+        this.fRec1288[<i32>(1)] = this.fRec1288[<i32>(0)];
         this.fIOTA = (this.fIOTA + <i32>(1));
     }
     compute(count: i32, inputs: Array<StaticArray<f32>>, outputs: Array<StaticArray<f32>>): void {
@@ -319,9 +319,11 @@ export class Padlead extends MidiVoice {
     private fout: StaticArray<f32> = new StaticArray<f32>(1);
     private silentSamples: i32 = 0;
     private releaseSamples: i32 = 0;
+    typedChannel!: PadleadChannel;
 
     constructor(channel: MidiChannel) {
         super(channel);
+        this.typedChannel = changetype<PadleadChannel>(changetype<usize>(channel));
         this.dsp.init(<i32>SAMPLERATE);
     }
 
@@ -362,8 +364,137 @@ export class Padlead extends MidiVoice {
     }
 }
 
+export class PadleadEffectDsp {
+    fSampleRate: i32;
+    fHslider1: f32;
+    fSlow0: f32;
+    fHslider2: f32;
+    fSlow1: f32;
+    fConst0: f32;
+    fHslider0: f32;
+    fSlow2: f32;
+    iSlow0: i32;
+    iSlow1: i32;
+    fSlow3: f32;
+    fSlow4: f32;
+    fSlow5: f32;
+    iSlow2: i32;
+    fRec132: StaticArray<f32> = new StaticArray<f32>(262144);
+    fIOTA: i32;
+
+    getSampleRate(): i32 {
+        return this.fSampleRate;
+    }
+    getNumInputs(): i32 {
+        return 1;
+    }
+    getNumOutputs(): i32 {
+        return 1;
+    }
+    metadata(m: usize): void {
+    }
+    buildUserInterface(ui_interface: usize): void {
+        // ui openbox padlead
+        // ui slider echotime
+        // ui slider echofb
+        // ui slider echomix
+        // ui closebox
+    }
+    static classInit(sample_rate: i32): void {
+    }
+    instanceResetUserInterface(): void {
+        this.fHslider1 = 0.5;
+        this.fHslider2 = 0.800000011920929;
+        this.fHslider0 = 0.36000001430511475;
+    }
+    instanceClear(): void {
+        for (let lRec0: i32 = 0; lRec0 < <i32>(262144); lRec0 = lRec0 + 1) {
+            this.fRec132[lRec0] = 0.0;
+        }
+        this.fIOTA = <i32>(0);
+    }
+    instanceConstants(sample_rate: i32): void {
+        this.fSampleRate = sample_rate;
+        this.fConst0 = min<f32>(192000.0, max<f32>(1.0, <f32>(this.fSampleRate)));
+    }
+    instanceInit(sample_rate: i32): void {
+        this.instanceConstants(sample_rate);
+        this.instanceResetUserInterface();
+        this.instanceClear();
+    }
+    init(sample_rate: i32): void {
+        PadleadEffectDsp.classInit(sample_rate);
+        this.instanceInit(sample_rate);
+    }
+    control(): void {
+        this.fSlow0 = <f32>(this.fHslider1);
+        this.fSlow1 = <f32>(this.fHslider2);
+        this.fSlow2 = (this.fConst0 * <f32>(this.fHslider0));
+        this.iSlow0 = <i32>(this.fSlow2);
+        this.iSlow1 = min<i32>(<i32>(131073), max<i32>(<i32>(0), this.iSlow0));
+        this.fSlow3 = Mathf.floor(this.fSlow2);
+        this.fSlow4 = (this.fSlow2 - this.fSlow3);
+        this.fSlow5 = (this.fSlow3 + (1.0 - this.fSlow2));
+        this.iSlow2 = min<i32>(<i32>(131073), max<i32>(<i32>(0), (this.iSlow0 + <i32>(1))));
+    }
+    frame(inputs: StaticArray<f32>, outputs: StaticArray<f32>): void {
+        let fTemp0: f32 = <f32>(inputs[<i32>(0)]);
+        let fTemp1: f32 = this.fRec132[((this.fIOTA - <i32>(1)) & <i32>(262143))];
+        let iTemp0: i32 = (this.fIOTA & <i32>(262143));
+        this.fRec132[iTemp0] = (fTemp0 + (this.fSlow0 * ((this.fSlow4 * this.fRec132[((this.fIOTA - (this.iSlow2 + <i32>(1))) & <i32>(262143))]) + (this.fSlow5 * this.fRec132[((this.fIOTA - (this.iSlow1 + <i32>(1))) & <i32>(262143))]))));
+        outputs[<i32>(0)] = <f32>((fTemp0 + (this.fSlow1 * this.fRec132[iTemp0])));
+        this.fIOTA = (this.fIOTA + <i32>(1));
+    }
+    compute(count: i32, inputs: Array<StaticArray<f32>>, outputs: Array<StaticArray<f32>>): void {
+    }
+}
+
+export class PadleadChannel extends MidiChannel {
+    private _paramsDirty: bool = true;
+
+    private _echotime: f32 = <f32>(0.36);
+    /** echotime [init: 0.36, min: 0.02, max: 1.2, step: 0.001] */
+    get echotime(): f32 { return this._echotime; }
+    set echotime(value: f32) { this._echotime = value; this._paramsDirty = true; }
+    private _echofb: f32 = <f32>(0.5);
+    /** echofb [init: 0.5, min: 0, max: 0.95, step: 0.01] */
+    get echofb(): f32 { return this._echofb; }
+    set echofb(value: f32) { this._echofb = value; this._paramsDirty = true; }
+    private _echomix: f32 = <f32>(0.8);
+    /** echomix [init: 0.8, min: 0, max: 1, step: 0.01] */
+    get echomix(): f32 { return this._echomix; }
+    set echomix(value: f32) { this._echomix = value; this._paramsDirty = true; }
+
+    readonly effectDsp: PadleadEffectDsp = new PadleadEffectDsp();
+    private efin: StaticArray<f32> = new StaticArray<f32>(1);
+    private efout: StaticArray<f32> = new StaticArray<f32>(1);
+
+    constructor(numvoices: i32, factoryFunc: (channel: MidiChannel, voiceindex: i32) => MidiVoice) {
+        super(numvoices, factoryFunc);
+        this.effectDsp.init(<i32>SAMPLERATE);
+    }
+
+    private applyParams(): void {
+        this.effectDsp.fHslider0 = this._echotime;
+        this.effectDsp.fHslider1 = this._echofb;
+        this.effectDsp.fHslider2 = this._echomix;
+        this.effectDsp.control();
+    }
+
+    preprocess(): void {
+        if (this._paramsDirty) {
+            this._paramsDirty = false;
+            this.applyParams();
+        }
+        this.efin[0] = this.signal.left;
+        this.effectDsp.frame(this.efin, this.efout);
+        this.signal.left = this.efout[0];
+        this.signal.right = this.efout[0];
+    }
+}
+
 export function initializeMidiSynth(): void {
-    midichannels[0] = new MidiChannel(10, (channel: MidiChannel) => new Padlead(channel));
+    midichannels[0] = new PadleadChannel(10, (channel: MidiChannel) => new Padlead(channel));
     midichannels[0].controlchange(7, 100);
     midichannels[0].controlchange(10, 64);
     midichannels[0].controlchange(91, 10);
