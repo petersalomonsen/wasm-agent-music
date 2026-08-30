@@ -3,7 +3,7 @@ import { Kick } from '../faust/kick';
 import { Hihat } from '../faust/hihat';
 import { Pad } from '../faust/pad';
 import { Bass } from '../faust/bass';
-import { Padlead, PadleadChannel } from '../faust/padlead';
+import { Padlead3, Padlead3Channel } from '../faust/padlead3';
 
 class Piano extends MidiVoice {
     osc: SineOscillator = new SineOscillator();
@@ -34,7 +34,7 @@ export function initializeMidiSynth(): void {
     midichannels[1] = new MidiChannel(3, (channel: MidiChannel) => new Hihat(channel));
     midichannels[2] = new MidiChannel(8, (channel: MidiChannel) => new Pad(channel));
     midichannels[3] = new MidiChannel(8, (channel: MidiChannel) => new Bass(channel));
-    midichannels[4] = new PadleadChannel(8, (channel: MidiChannel) => new Padlead(channel));
+    midichannels[4] = new Padlead3Channel(8, (channel: MidiChannel) => new Padlead3(channel));
 }
 
 export function postprocess(): void {}
