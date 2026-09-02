@@ -153,7 +153,7 @@ export class PadDsp {
         this.fConst2 = max<f32>(1.0, (this.fConst0 * 0.30000001192092896));
         this.fConst3 = (1.0 / this.fConst2);
         this.fConst4 = (0.20000000298023224 / max<f32>(1.0, (this.fConst0 * 0.20000000298023224)));
-        this.fConst5 = (1.0 / max<f32>(1.0, (this.fConst0 * 1.5)));
+        this.fConst5 = (1.0 / max<f32>(1.0, (this.fConst0 * 0.4000000059604645)));
     }
     instanceInit(sample_rate: i32): void {
         this.instanceConstants(sample_rate);

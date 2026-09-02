@@ -9,7 +9,7 @@ osc1 = os.sawtooth(freq) * 0.5;
 osc2 = os.sawtooth(freq * 1.005) * 0.5;
 
 // Slow attack, long sustain, slow release for pad character
-myenv = en.adsr(0.3, 0.2, 0.8, 1.5, gate);
+myenv = en.adsr(0.3, 0.2, 0.8, 0.4, gate);
 
 // Mix and apply envelope
 process = (osc1 + osc2) * myenv * gain;
