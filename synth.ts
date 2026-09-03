@@ -4,6 +4,7 @@ import { Hihat } from '../faust/hihat';
 import { Pad } from '../faust/pad';
 import { Bass } from '../faust/bass';
 import { Padlead3, Padlead3Channel } from '../faust/padlead3';
+import { Jumppad2, Jumppad2Channel } from '../faust/jumppad2';
 
 class Piano extends MidiVoice {
     osc: SineOscillator = new SineOscillator();
@@ -35,6 +36,7 @@ export function initializeMidiSynth(): void {
     midichannels[2] = new MidiChannel(8, (channel: MidiChannel) => new Pad(channel));
     midichannels[3] = new MidiChannel(8, (channel: MidiChannel) => new Bass(channel));
     midichannels[4] = new Padlead3Channel(8, (channel: MidiChannel) => new Padlead3(channel));
+    midichannels[5] = new Jumppad2Channel(8, (channel: MidiChannel) => new Jumppad2(channel));
 }
 
 export function postprocess(): void {}

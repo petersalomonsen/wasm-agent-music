@@ -5,6 +5,7 @@ addInstrument('hihat');  // 1
 addInstrument('pad');    // 2
 addInstrument('bass');   // 3
 addInstrument('padlead');// 4
+addInstrument('jumppad');// 5
 
 
 
@@ -104,6 +105,85 @@ for (let rep = 0; rep < 2; rep++) {
     pad.steps(4, [ [c5, e5, g5], , [c5, e5, g5], , ].repeat(3));
     bass.steps(4, [ c3, null, c4, null ].repeat(3));
     await kick.steps(4, [ c2, , , , ].repeat(3));
+}
+
+// === Recorded jumppad chord take, arranged x4 (2 with intro bass, 2 with italo-disco bass) ===
+function playJumpChords() {
+    createTrack(5).play([[ 1.04, d6(0.53, 95) ],
+    [ 1.03, a5(0.57, 99) ],
+    [ 1.04, f5(0.56, 99) ],
+    [ 1.98, e5(1.33, 88) ],
+    [ 1.97, g5(1.34, 98) ],
+    [ 2.00, c6(1.35, 97) ],
+    [ 3.97, b5(1.05, 100) ],
+    [ 3.98, d5(1.04, 89) ],
+    [ 3.97, g5(1.08, 102) ],
+    [ 5.41, g5(0.58, 104) ],
+    [ 5.44, d5(0.60, 89) ],
+    [ 5.43, b5(0.63, 104) ],
+    [ 6.43, d5(1.50, 90) ],
+    [ 6.41, as5(1.54, 94) ],
+    [ 6.42, f5(1.56, 82) ],
+    [ 8.91, f5(0.69, 92) ],
+    [ 8.91, c5(0.73, 98) ],
+    [ 8.90, a5(0.76, 94) ],
+    [ 9.97, e5(1.62, 87) ],
+    [ 9.95, c5(1.68, 88) ],
+    [ 9.94, g5(1.71, 94) ],
+    [ 12.06, g5(1.05, 90) ],
+    [ 12.05, b4(1.06, 99) ],
+    [ 12.03, d5(1.09, 95) ],
+    [ 13.48, b4(0.56, 99) ],
+    [ 13.50, g5(0.57, 97) ],
+    [ 13.47, d5(0.68, 83) ],
+    [ 14.46, as4(1.37, 96) ],
+    [ 14.45, d5(1.38, 63) ],
+    [ 14.48, f5(1.38, 88) ]].quantize(4));
+}
+
+function introBassLine() {
+    introBass.steps(4, [
+        d2(0.2), d2(0.1), d2(0.2), d2(0.1),
+        d2(0.2), d2(0.1), d2(0.2), d2(0.1),
+        d2(0.2), d2(0.1), d2(0.2), d2(0.1),
+        d3(0.2), d3(0.1), d3(0.2), d3(0.1),
+    ].repeat(3));
+}
+
+// Italo-disco octave-pulse bass, roots following the recorded chords: D C G A# F C G A#
+function italoBassLine() {
+    bass.steps(2, [
+        d2, d3, d2, d3,      c2, c3, c2, c3,
+        g2, g3, g2, g3,      as2, as3, as2, as3,
+        f2, f3, f2, f3,      c2, c3, c2, c3,
+        g2, g3, g2, g3,      as2, as3, as2, as3,
+    ]);
+}
+
+function introHats() {
+    introHihat.steps(4, [ , , fs3, null ].repeat(15));
+}
+
+// Playthrough 1 - the recorded take (recording armed for this bar)
+startRecording();
+playJumpChords();
+introHats();
+introBassLine();
+await introKick.steps(4, [ c2, , , , ].repeat(15));
+stopRecording();
+
+// Playthrough 2 - repeat as-is (intro bass + drums)
+playJumpChords();
+introHats();
+introBassLine();
+await introKick.steps(4, [ c2, , , , ].repeat(15));
+
+// Playthroughs 3 & 4 - italo-disco bass instead of intro bass
+for (let r = 0; r < 2; r++) {
+    playJumpChords();
+    introHats();
+    italoBassLine();
+    await introKick.steps(4, [ c2, , , , ].repeat(15));
 }
 
 loopHere();
