@@ -55,7 +55,7 @@ function playPadlead() {
 
 
 
-// === Intro: 16 beats (4 bars of drums + bass) ===
+// === PART "intro" (bars 1-8): drums + pulsing intro bass, played twice ===
 const introKick  = createTrack(0, 4);
 const introHihat = createTrack(1, 4);
 const introBass  = createTrack(3, 4);
@@ -72,9 +72,9 @@ for (let introRep = 0; introRep < 2; introRep++) {
     await introKick.steps(4, [ c2, , , , ].repeat(15));
 }
 
-// === Sections pass 1 (no lead) + pass 2 (with lead) ===
-for (let rep = 0; rep < 2; rep++) {
-    if (rep === 1) playPadlead();
+// === PART "verse" (bars 9-16, no lead) then PART "chorus" (bars 17-24, adds padlead lead) — progression Dm-F-G-A#-C ===
+for (let rep = 0; rep < 4; rep++) {
+    if (rep >= 1) playPadlead();
 
     // Section 1: D minor
     hihat.steps(4, [ , , fs3, null ].repeat(7));
@@ -107,7 +107,7 @@ for (let rep = 0; rep < 2; rep++) {
     await kick.steps(4, [ c2, , , , ].repeat(3));
 }
 
-// === Recorded jumppad chord take, arranged x4 (2 with intro bass, 2 with italo-disco bass) ===
+// === PART "break" (bars 25-32): jumppad chord take over intro bass; then PART "finale" (bars 33-40): same chords + italo-disco bass + recorded padlead lead ===
 function playJumpChords() {
     createTrack(5).play([[ 1.04, d6(0.53, 95) ],
     [ 1.03, a5(0.57, 99) ],
@@ -178,8 +178,8 @@ introHats();
 introBassLine();
 await introKick.steps(4, [ c2, , , , ].repeat(15));
 
-playFromHere();
 
+// "finale" lead melody (recorded on padlead, ch4), spans bars 33-40
 createTrack(4).play([[ 0.56, d6(0.44, 69) ],
 [ 0.55, d7(0.46, 74) ],
 [ 1.03, f6(0.41, 70) ],
