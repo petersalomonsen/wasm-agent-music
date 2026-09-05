@@ -51,6 +51,44 @@ function playPadlead() {
     [ 31.01, c7(0.62, 97) ]].quantize(4));
 }
 
+// Third-below (fourth where the chord needs it) harmony for the lead, used ONLY in the
+// last chorus round. Chords per pass: Dm(0-8) F(8-16) G(16-24) A#(24-28) C(28-32).
+function playPadleadHarmony() {
+    padlead.play([[ 2.50, f6(0.53, 70) ],
+    [ 3.01, a6(0.48, 70) ],
+    [ 4.01, a6(0.94, 70) ],
+    [ 4.95, a6(0.45, 70) ],
+    [ 5.41, f6(0.54, 70) ],
+    [ 5.99, a6(0.69, 70) ],
+    [ 6.91, a6(0.56, 70) ],
+    [ 7.50, a6(0.60, 70) ],
+    [ 10.48, f6(0.47, 70) ],
+    [ 10.98, a6(0.58, 70) ],
+    [ 12.04, a6(1.08, 70) ],
+    [ 13.04, a6(0.36, 70) ],
+    [ 13.49, f6(0.40, 70) ],
+    [ 13.94, a6(0.64, 70) ],
+    [ 14.93, a6(0.44, 70) ],
+    [ 15.45, c7(1.11, 70) ],
+    [ 17.02, c7(0.42, 70) ],
+    [ 18.00, g6(0.56, 70) ],
+    [ 18.47, b6(0.54, 70) ],
+    [ 19.46, d7(1.08, 70) ],
+    [ 20.93, b6(0.50, 70) ],
+    [ 21.91, g6(0.53, 70) ],
+    [ 22.40, b6(0.65, 70) ],
+    [ 23.42, d7(0.92, 70) ],
+    [ 24.93, c7(0.62, 70) ],
+    [ 25.95, a6(0.45, 70) ],
+    [ 26.43, as6(0.71, 70) ],
+    [ 27.42, f6(0.68, 70) ],
+    [ 28.47, e6(0.73, 70) ],
+    [ 29.45, c6(0.37, 70) ],
+    [ 30.01, e6(0.50, 70) ],
+    [ 30.47, e6(0.54, 70) ],
+    [ 31.01, a6(0.62, 70) ]].quantize(4));
+}
+
 
 
 
@@ -75,6 +113,7 @@ for (let introRep = 0; introRep < 2; introRep++) {
 // === PART "verse" (bars 9-16, no lead) then PART "chorus" (bars 17-24, adds padlead lead) — progression Dm-F-G-A#-C ===
 for (let rep = 0; rep < 4; rep++) {
     if (rep >= 1) playPadlead();
+    if (rep === 3) playPadleadHarmony();
 
     // Section 1: D minor
     hihat.steps(4, [ , , fs3, null ].repeat(7));
