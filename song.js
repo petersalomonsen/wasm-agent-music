@@ -6,6 +6,7 @@ addInstrument('pad');    // 2
 addInstrument('bass');   // 3
 addInstrument('padlead');// 4
 addInstrument('jumppad');// 5
+addInstrument('warmpad');// 6
 
 
 
@@ -14,6 +15,7 @@ const hihat = createTrack(1, 4);
 const pad   = createTrack(2, 4);
 const bass  = createTrack(3, 4);
 const padlead = createTrack(4);
+const warmpad = createTrack(6);
 
 function playPadlead() {
     padlead.play([[ 2.50, a6(0.53, 72) ],
@@ -279,6 +281,45 @@ for (let r = 0; r < 2; r++) {
     introHats();
     italoBassLine();
     await introKick.steps(4, [ c2, , , , ].repeat(15));
+}
+
+// === PART "finale2" (played twice): warm low-pass pad chords + padlead melody over the finale beat ===
+for (let f2 = 0; f2 < 2; f2++) {
+    // finale2 CHORDS -> WARM PAD (ch6), one octave up, tidied to the 2-beat grid
+    warmpad.play([
+        [ 0,  d6(1.9, 72), f6(1.9, 72), a6(1.9, 72) ],    // Dm
+        [ 2,  c6(1.9, 72), e6(1.9, 72), g6(1.9, 72) ],    // C
+        [ 4,  g5(1.9, 72), b5(1.9, 72), d6(1.9, 72) ],    // G
+        [ 6,  as5(1.9, 72), d6(1.9, 72), f6(1.9, 72) ],   // A#/Bb
+        [ 8,  f6(1.9, 72), a6(1.9, 72), c7(1.9, 72) ],    // F
+        [ 10, c6(1.9, 72), e6(1.9, 72), g6(1.9, 72) ],    // C
+        [ 12, g5(1.9, 72), b5(1.9, 72), d6(1.9, 72) ],    // G
+        [ 14, as5(1.9, 72), d6(1.9, 72), f6(1.9, 72) ],   // A#/Bb
+    ]);
+
+    // finale2 MELODY -> PADLEAD (ch4), quantized to fix the off-beat timing
+    createTrack(4).play([[ 0.60, f7(0.56, 79) ],
+    [ 1.03, e7(0.47, 89) ],
+    [ 1.49, c7(0.50, 98) ],
+    [ 1.97, g6(4.51, 88) ],
+    [ 6.49, f6(0.56, 83) ],
+    [ 7.01, g6(0.40, 102) ],
+    [ 7.43, a6(1.00, 100) ],
+    [ 8.48, c7(0.56, 108) ],
+    [ 8.98, a6(0.44, 97) ],
+    [ 9.45, g6(0.99, 103) ],
+    [ 10.47, c6(0.73, 78) ],
+    [ 11.46, d6(1.02, 103) ],
+    [ 12.47, f6(0.99, 94) ],
+    [ 13.50, g6(0.98, 110) ],
+    [ 14.52, a6(0.91, 114) ]].quantize(4));
+
+    // finale beat (drums + italo bass); recording armed so padlead can be re-taken
+    startRecording();
+    introHats();
+    italoBassLine();
+    await introKick.steps(4, [ c2, , , , ].repeat(15));
+    stopRecording();
 }
 
 loopHere();
