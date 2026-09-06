@@ -7,6 +7,7 @@ addInstrument('bass');   // 3
 addInstrument('padlead');// 4
 addInstrument('jumppad');// 5
 addInstrument('warmpad');// 6
+addInstrument('snare');  // 7
 
 
 
@@ -16,6 +17,15 @@ const pad   = createTrack(2, 4);
 const bass  = createTrack(3, 4);
 const padlead = createTrack(4);
 const warmpad = createTrack(6);
+const snare = createTrack(7, 1);
+
+// Italo-disco drums: snare on beats 2 & 4, hi-hats on the 2/4 and 3/4 of every beat.
+function italoHats(beats) {
+    hihat.steps(4, [ , , fs3, fs3 ].repeat(beats - 1));
+}
+function italoSnare(beats) {
+    snare.steps(1, [ , d3, , d3 ].repeat(beats / 4 - 1));
+}
 
 function playPadlead() {
     padlead.play([[ 2.50, a6(0.53, 72) ],
@@ -278,7 +288,8 @@ createTrack(4).play([[ 0.56, d6(0.44, 69) ],
 // Playthroughs 3 & 4 - italo-disco bass instead of intro bass
 for (let r = 0; r < 2; r++) {
     playJumpChords();
-    introHats();
+    italoHats(16);
+    italoSnare(16);
     italoBassLine();
     await introKick.steps(4, [ c2, , , , ].repeat(15));
 }
@@ -320,7 +331,8 @@ for (let f2 = 0; f2 < 2; f2++) {
     }
 
     // finale beat (drums + italo bass)
-    introHats();
+    italoHats(16);
+    italoSnare(16);
     italoBassLine();
     await introKick.steps(4, [ c2, , , , ].repeat(15));
 }
@@ -558,10 +570,17 @@ for (let round = 0; round < 6; round++) {
     finaleWarmpad();
     finaleLead();
     if (round >= 1) finaleJump();
-    finaleHats();
-    if (round <= 1)      finaleIntroBass();
-    else if (round <= 3) finaleItaloBass();
-    else                 finaleDescBass();
+    if (round <= 1) {
+        finaleHats();
+        finaleIntroBass();
+    } else if (round <= 3) {
+        italoHats(32);
+        italoSnare(32);
+        finaleItaloBass();
+    } else {
+        finaleHats();
+        finaleDescBass();
+    }
     await finaleKick();
 }
 stopRecording();
