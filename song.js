@@ -358,8 +358,8 @@ for (let f2 = 0; f2 < 2; f2++) {
 // === PART "finale" (the real finale — 6 variation rounds, each 32 beats): built from the recorded warm pad + lead + jumppad takes ===
 
 startRecording();
-function finaleLead() {
-createTrack(4).play([[ 1.09, d6(0.45, 79) ],
+function finaleLead(ending) {
+const notes = [[ 1.09, d6(0.45, 79) ],
 [ 0.56, a5(1.19, 83) ],
 [ 1.54, f6(0.47, 92) ],
 [ 2.06, e6(0.52, 78) ],
@@ -413,7 +413,15 @@ createTrack(4).play([[ 1.09, d6(0.45, 79) ],
 [ 29.46, d6(0.56, 77) ],
 [ 29.98, g5(0.77, 87) ],
 [ 30.44, b5(0.59, 74) ],
-[ 30.97, d6(0.70, 83) ]].quantize(4));
+[ 30.97, d6(0.70, 83) ]];
+    if (ending) {
+        // keep through the D that lands on the kick stab (beat 29.5), drop the notes after it, and let it ring out
+        const trimmed = notes.filter(row => row[0] <= 29.5);
+        trimmed[trimmed.length - 1] = [ 29.46, d6(2.4, 77) ];   // ends ~31.9, before loopHere at beat 32 so the note-off fires
+        createTrack(4).play(trimmed.quantize(4));
+    } else {
+        createTrack(4).play(notes.quantize(4));
+    }
 }
 
 function finaleWarmpad() {
@@ -600,6 +608,26 @@ function finaleDescBass() {
     bass.steps(4, [ ...dbar, ...dbar, ...dbar, ...dbar, ...dbar, ...dbar, ...closebars ]);
 }
 
+// final round: descending pulse through beat 28 (D pedal, A#, C), then last 4 beats = two sustaining G stabs
+// on the jump-pad hits (beats 28 & 29.5), the second an octave down
+function finaleDescBassEnding() {
+    const dbar = [
+        d2(0.2), d2(0.1), d2(0.2), d2(0.1),
+        d2(0.2), d2(0.1), d2(0.2), d2(0.1),
+        d2(0.2), d2(0.1), d2(0.2), d2(0.1),
+        d3(0.2), d3(0.1), d3(0.2), d3(0.1),
+    ];
+    const pulse = [
+        ...dbar, ...dbar, ...dbar, ...dbar, ...dbar, ...dbar,   // 24 beats D pedal
+        as2(0.2), as2(0.1), as2(0.2), as2(0.1),                 // beat 24
+        as2(0.2), as2(0.1), as2(0.2), as2(0.1),                 // beat 25
+        c2(0.2), c2(0.1), c2(0.2), c2(0.1),                     // beat 26
+        c2(0.2), c2(0.1), c2(0.2), c2(0.1),                     // beat 27
+    ];
+    bass.steps(4, pulse);                                        // 28 beats
+    bass.play([[ 28, g3(1.5) ], [ 29.5, g2(2.5) ]]);            // two sustaining G stabs, 2nd an octave down
+}
+
 // plain intro-style D pedal for a full round (32 beats)
 function finaleIntroBass() {
     bass.steps(4, [
@@ -614,7 +642,7 @@ function finaleIntroBass() {
 // 1-2: warm pad + lead + intro D bass · 2 adds jumppad · 3-4: italo bass (chords) · 5-6: intro D bass, descending A# C G
 for (let round = 0; round < 6; round++) {
     finaleWarmpad();
-    finaleLead();
+    finaleLead(round === 5);
     if (round >= 1) finaleJump();
     if (round <= 1) {
         finaleHats();
@@ -635,7 +663,7 @@ for (let round = 0; round < 6; round++) {
         // final round: drop hats & snare for the last 4 beats — only the kick plays, on the jump-pad stabs
         finaleHats(28);
         finaleBackbeat(28);
-        finaleDescBass();
+        finaleDescBassEnding();
         await finaleKickEnding();
     }
 }
