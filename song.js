@@ -537,7 +537,8 @@ createTrack(5).play([[ 1.00, f6(0.73, 92) ],
 
 // --- beat + bass builders for the finale variations (each spans 32 beats = one round) ---
 function finaleHats() {
-    hihat.steps(4, [ , , fs3, null ].repeat(31));
+    // intro-bass rounds: hi-hat on every step with no kick — half, normal, half velocity
+    hihat.steps(4, [ , fs3(0.1,30), fs3(0.1,100), fs3(0.1,50), ].repeat(31));
 }
 function finaleKick() {
     return kick.steps(4, [ c2, , , , ].repeat(31));   // awaited beat-keeper, 32 beats
