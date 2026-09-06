@@ -404,7 +404,7 @@ const notes = [[ 1.09, d6(0.45, 79) ],
 [ 24.95, d6(0.52, 74) ],
 [ 24.44, as5(1.04, 67) ],
 [ 25.48, f6(0.52, 87) ],
-[ 25.95, d6(0.58, 83) ],
+[ 25.95, e6(0.58, 83) ],
 [ 26.46, c6(0.56, 65) ],
 [ 26.93, a5(0.51, 77) ],
 [ 27.48, d6(0.98, 89) ],
@@ -417,7 +417,7 @@ const notes = [[ 1.09, d6(0.45, 79) ],
     if (ending) {
         // keep through the D that lands on the kick stab (beat 29.5), drop the notes after it, and let it ring out
         const trimmed = notes.filter(row => row[0] <= 29.5);
-        trimmed[trimmed.length - 1] = [ 29.46, d6(2.4, 77) ];   // ends ~31.9, before loopHere at beat 32 so the note-off fires
+        trimmed[trimmed.length - 1] = [ 29.46, d6(1.2, 77) ];   // ends ~31.9, before loopHere at beat 32 so the note-off fires
         createTrack(4).play(trimmed.quantize(4));
     } else {
         createTrack(4).play(notes.quantize(4));
