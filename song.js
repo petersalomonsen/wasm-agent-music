@@ -148,7 +148,7 @@ for (let rep = 0; rep < 4; rep++) {
     await kick.steps(4, [ c2, , , , ].repeat(3));
 }
 
-// === PART "break" (bars 25-32): jumppad chord take over intro bass; then PART "finale" (bars 33-40): same chords + italo-disco bass + recorded padlead lead ===
+// === PART "break" (bars 25-32): jumppad chord take over intro bass; then PART "drop" (bars 33-40): same chords + italo-disco bass + recorded padlead lead ===
 function playJumpChords() {
     createTrack(5).play([[ 1.04, d6(0.53, 95) ],
     [ 1.03, a5(0.57, 99) ],
@@ -283,7 +283,7 @@ for (let r = 0; r < 2; r++) {
     await introKick.steps(4, [ c2, , , , ].repeat(15));
 }
 
-// === PART "finale2" (played twice): warm low-pass pad chords + padlead melody over the finale beat ===
+// === PART "breakdown" (played twice): warm low-pass pad chords + padlead melody over the beat ===
 for (let f2 = 0; f2 < 2; f2++) {
     // finale2 CHORDS -> WARM PAD (ch6), one octave up, tidied to the 2-beat grid
     warmpad.play([
@@ -325,9 +325,10 @@ for (let f2 = 0; f2 < 2; f2++) {
     await introKick.steps(4, [ c2, , , , ].repeat(15));
 }
 
-// === PART "finale3" (record): intro-style beat (drums + intro bass), armed to play & record warm pad (ch6) over it ===
-playFromHere();
+// === PART "finale" (the real finale — 6 variation rounds, each 32 beats): built from the recorded warm pad + lead + jumppad takes ===
+
 startRecording();
+function finaleLead() {
 createTrack(4).play([[ 1.09, d6(0.45, 79) ],
 [ 0.56, a5(1.19, 83) ],
 [ 1.54, f6(0.47, 92) ],
@@ -383,7 +384,9 @@ createTrack(4).play([[ 1.09, d6(0.45, 79) ],
 [ 29.98, g5(0.77, 87) ],
 [ 30.44, b5(0.59, 74) ],
 [ 30.97, d6(0.70, 83) ]].quantize(4));
+}
 
+function finaleWarmpad() {
 createTrack(6).play([[ 0.88, a5(0.92, 72) ],
 [ 0.89, d6(0.99, 62) ],
 [ 0.91, f6(1.03, 67) ],
@@ -431,7 +434,9 @@ createTrack(6).play([[ 0.88, a5(0.92, 72) ],
 [ 29.56, g6(2.23, 88) ],
 [ 29.54, b5(2.27, 93) ],
 [ 29.54, d6(2.36, 83) ]].quantize(4));
+}
 
+function finaleJump() {
 createTrack(5).play([[ 1.00, f6(0.73, 92) ],
 [ 0.99, a5(0.74, 92) ],
 [ 0.97, d6(0.81, 84) ],
@@ -498,11 +503,66 @@ createTrack(5).play([[ 1.00, f6(0.73, 92) ],
 [ 29.55, g5(1.66, 98) ],
 [ 29.54, d6(1.69, 95) ],
 [ 29.55, b5(1.72, 99) ]].quantize(4));
+}
 
-for (let f3 = 0; f3 < 2; f3++) {
-    introHats();
-    introBassLine();
-    await introKick.steps(4, [ c2, , , , ].repeat(15));
+// --- beat + bass builders for the finale variations (each spans 32 beats = one round) ---
+function finaleHats() {
+    hihat.steps(4, [ , , fs3, null ].repeat(31));
+}
+function finaleKick() {
+    return kick.steps(4, [ c2, , , , ].repeat(31));   // awaited beat-keeper, 32 beats
+}
+// italo-disco octave-pulse bass following the finale chords: Dm C G (x3), then A# C G
+function finaleItaloBass() {
+    bass.steps(2, [
+        d2, d3, d2, d3,     c2, c3, c2, c3,     g2, g3, g2, g3,     g2, g3, g2, g3,
+        d2, d3, d2, d3,     c2, c3, c2, c3,     g2, g3, g2, g3,     g2, g3, g2, g3,
+        d2, d3, d2, d3,     c2, c3, c2, c3,     g2, g3, g2, g3,     g2, g3, g2, g3,
+        as2, as3, as2, as3, c2, c3, c2, c3,     g2, g3, g2, g3,     g2, g3, g2, g3,
+    ]);
+}
+// intro-style D pedal for 6 bars, then descending A#, C, G to close the round
+function finaleDescBass() {
+    const dbar = [
+        d2(0.2), d2(0.1), d2(0.2), d2(0.1),
+        d2(0.2), d2(0.1), d2(0.2), d2(0.1),
+        d2(0.2), d2(0.1), d2(0.2), d2(0.1),
+        d3(0.2), d3(0.1), d3(0.2), d3(0.1),
+    ];
+    const closebars = [
+        as2(0.2), as2(0.1), as2(0.2), as2(0.1),
+        as2(0.2), as2(0.1), as2(0.2), as2(0.1),
+        c2(0.2), c2(0.1), c2(0.2), c2(0.1),
+        c2(0.2), c2(0.1), c2(0.2), c2(0.1),
+        g2(0.2), g2(0.1), g2(0.2), g2(0.1),
+        g2(0.2), g2(0.1), g2(0.2), g2(0.1),
+        g2(0.2), g2(0.1), g2(0.2), g2(0.1),
+        g3(0.2), g3(0.1), g3(0.2), g3(0.1),
+    ];
+    bass.steps(4, [ ...dbar, ...dbar, ...dbar, ...dbar, ...dbar, ...dbar, ...closebars ]);
+}
+
+// plain intro-style D pedal for a full round (32 beats)
+function finaleIntroBass() {
+    bass.steps(4, [
+        d2(0.2), d2(0.1), d2(0.2), d2(0.1),
+        d2(0.2), d2(0.1), d2(0.2), d2(0.1),
+        d2(0.2), d2(0.1), d2(0.2), d2(0.1),
+        d3(0.2), d3(0.1), d3(0.2), d3(0.1),
+    ].repeat(7));
+}
+
+// === 6 variation rounds (all with drums) ===
+// 1-2: warm pad + lead + intro D bass · 2 adds jumppad · 3-4: italo bass (chords) · 5-6: intro D bass, descending A# C G
+for (let round = 0; round < 6; round++) {
+    finaleWarmpad();
+    finaleLead();
+    if (round >= 1) finaleJump();
+    finaleHats();
+    if (round <= 1)      finaleIntroBass();
+    else if (round <= 3) finaleItaloBass();
+    else                 finaleDescBass();
+    await finaleKick();
 }
 stopRecording();
 
