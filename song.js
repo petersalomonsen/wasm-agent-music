@@ -536,12 +536,39 @@ createTrack(5).play([[ 1.00, f6(0.73, 92) ],
 }
 
 // --- beat + bass builders for the finale variations (each spans 32 beats = one round) ---
-function finaleHats() {
+function finaleHats(beats) {
+    beats = beats || 32;
     // intro-bass rounds: hi-hat on every step with no kick — half, normal, half velocity
-    hihat.steps(4, [ , fs3(0.1,30), fs3(0.1,100), fs3(0.1,50), ].repeat(31));
+    hihat.steps(4, [ , fs3(0.1,30), fs3(0.1,100), fs3(0.1,50), ].repeat(beats - 1));
 }
 function finaleKick() {
     return kick.steps(4, [ c2, , , , ].repeat(31));   // awaited beat-keeper, 32 beats
+}
+// snare on every second beat (beats 2 & 4) for the given number of beats
+function finaleBackbeat(beats) {
+    snare.steps(1, [ , d3, , d3 ].repeat(beats / 4 - 1));
+}
+// backbeat for 28 beats, then a rolling 16th-note snare crescendo over the last 4 beats (into the italo section)
+function finaleBackbeatFill() {
+    const n = [];
+    for (let b = 1; b < 28; b += 2) n.push([ b, d3(0.5) ]);
+    for (let i = 0; i < 16; i++) {
+        const vel = 55 + Math.round(i / 15 * 60);   // crescendo 55 -> 115
+        n.push([ 28 + i * 0.25, d3(0.2, vel) ]);
+    }
+    snare.play(n);
+}
+// final-round kick: every beat for 28 beats, then ONLY on the jump-pad stabs (beats 28 & 29.5)
+function finaleKickEnding() {
+    const steps = [];
+    for (let s = 0; s < 128; s++) {
+        const beat = s / 4;
+        let hit = null;
+        if (beat < 28) { if (s % 4 === 0) hit = c2; }
+        else if (beat === 28 || beat === 29.5) hit = c2;
+        steps.push(hit);
+    }
+    return kick.steps(4, steps);   // awaited beat-keeper, 32 beats
 }
 // italo-disco octave-pulse bass following the finale chords: Dm C G (x3), then A# C G
 function finaleItaloBass() {
@@ -591,16 +618,26 @@ for (let round = 0; round < 6; round++) {
     if (round >= 1) finaleJump();
     if (round <= 1) {
         finaleHats();
+        if (round === 1) finaleBackbeatFill();   // jumppad in → backbeat + rolling fill into the italo section
         finaleIntroBass();
+        await finaleKick();
     } else if (round <= 3) {
         italoHats(32);
         italoSnareFillA(32);   // both italo rounds get the simple fill (neither hands off to a new section)
         finaleItaloBass();
-    } else {
+        await finaleKick();
+    } else if (round === 4) {
         finaleHats();
+        finaleBackbeat(32);    // snare backbeat returns after the italo section
         finaleDescBass();
+        await finaleKick();
+    } else {
+        // final round: drop hats & snare for the last 4 beats — only the kick plays, on the jump-pad stabs
+        finaleHats(28);
+        finaleBackbeat(28);
+        finaleDescBass();
+        await finaleKickEnding();
     }
-    await finaleKick();
 }
 stopRecording();
 
