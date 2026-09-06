@@ -26,6 +26,24 @@ function italoHats(beats) {
 function italoSnare(beats) {
     snare.steps(1, [ , d3, , d3 ].repeat(beats / 4 - 1));
 }
+// simple end-of-phrase fill: the normal backbeat, plus ONE extra snare between the last two beats of the round
+function italoSnareFillA(beats) {
+    const n = [];
+    for (let b = 1; b < beats; b += 2) n.push([ b, d3 ]);   // backbeats: beats 2, 4, ... (0-indexed odd)
+    n.push([ beats - 1.5, d3 ]);                            // extra snare between beat 31 and 32
+    snare.play(n);
+}
+// comprehensive transition fill: last two beats follow the hi-hats (.5 & .75); no snare on the final downbeat (kick only)
+function italoSnareFillB(beats) {
+    const bars = beats / 4;
+    const n = [];
+    for (let b = 0; b < bars - 1; b++) n.push([ b * 4 + 1, d3 ], [ b * 4 + 3, d3 ]);
+    const L = (bars - 1) * 4;
+    n.push([ L + 1, d3 ],
+           [ L + 2.5, d3 ], [ L + 2.75, d3 ],
+           [ L + 3.5, d3 ], [ L + 3.75, d3 ]);
+    snare.play(n);
+}
 
 function playPadlead() {
     padlead.play([[ 2.50, a6(0.53, 72) ],
@@ -289,7 +307,7 @@ createTrack(4).play([[ 0.56, d6(0.44, 69) ],
 for (let r = 0; r < 2; r++) {
     playJumpChords();
     italoHats(16);
-    italoSnare(16);
+    if (r === 1) italoSnareFillB(16); else italoSnareFillA(16);   // 2nd round hands off to the breakdown → comprehensive fill; else simple fill
     italoBassLine();
     await introKick.steps(4, [ c2, , , , ].repeat(15));
 }
@@ -332,7 +350,7 @@ for (let f2 = 0; f2 < 2; f2++) {
 
     // finale beat (drums + italo bass)
     italoHats(16);
-    italoSnare(16);
+    if (f2 === 1) italoSnareFillB(16); else italoSnareFillA(16);   // 2nd round hands off to the finale → comprehensive fill; else simple fill
     italoBassLine();
     await introKick.steps(4, [ c2, , , , ].repeat(15));
 }
@@ -575,7 +593,7 @@ for (let round = 0; round < 6; round++) {
         finaleIntroBass();
     } else if (round <= 3) {
         italoHats(32);
-        italoSnare(32);
+        italoSnareFillA(32);   // both italo rounds get the simple fill (neither hands off to a new section)
         finaleItaloBass();
     } else {
         finaleHats();
