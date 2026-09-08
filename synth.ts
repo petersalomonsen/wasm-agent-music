@@ -1,4 +1,4 @@
-import { midichannels, MidiChannel, MidiVoice, SineOscillator, Envelope, notefreq } from './globalimports';
+import { midichannels, MidiChannel, MidiVoice, SineOscillator, Envelope, notefreq, freeverb, midiLevelToGain, outputline } from './globalimports';
 import { Kick } from '../faust/kick';
 import { Hihat } from '../faust/hihat';
 import { Pad } from '../faust/pad';
@@ -7,6 +7,11 @@ import { Padlead3, Padlead3Channel } from '../faust/padlead3';
 import { Jumppad2, Jumppad2Channel } from '../faust/jumppad2';
 import { Warmpad } from '../faust/warmpad';
 import { Snare } from '../faust/snare';
+import { Masterverb, MasterverbChannel } from '../faust/masterverb';
+
+// Global master reverb: one Zita-rev1 instance (MasterverbChannel) driven over the full mix in postprocess().
+const masterReverbWet: f32 = 0.30;
+let masterverb: MasterverbChannel | null = null;
 
 class Piano extends MidiVoice {
     osc: SineOscillator = new SineOscillator();
@@ -41,6 +46,26 @@ export function initializeMidiSynth(): void {
     midichannels[5] = new Jumppad2Channel(8, (channel: MidiChannel) => new Jumppad2(channel));
     midichannels[6] = new MidiChannel(8, (channel: MidiChannel) => new Warmpad(channel));
     midichannels[7] = new MidiChannel(2, (channel: MidiChannel) => new Snare(channel));
+
+    // Global reverb is now the Zita-rev1 MASTER effect (one MasterverbChannel), driven over the
+    // full mix in postprocess(). Disable the built-in Freeverb bus so the two don't stack:
+    // zero its wet and every per-channel send.
+    freeverb.set_wet(0.0);
+    for (let ch = 0; ch < 16; ch++) {
+        midichannels[ch].reverb = 0;
+    }
+
+    masterverb = new MasterverbChannel(1, (channel: MidiChannel, voiceindex: i32) => new Masterverb(channel));
 }
 
-export function postprocess(): void {}
+export function postprocess(): void {
+    // Master reverb: run the whole mix through the one Zita-rev1 instance and add its wet tail back.
+    if (masterverb === null) return;
+    const mv = masterverb as MasterverbChannel;
+    mv.signal.left = outputline.left;
+    mv.signal.right = outputline.right;
+    mv.preprocess();
+    outputline.left += mv.signal.left * masterReverbWet;
+    outputline.right += mv.signal.right * masterReverbWet;
+    mv.signal.clear();
+}
