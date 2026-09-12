@@ -690,6 +690,7 @@ createTrack(6).play([
 [ 29.47, b5(2.21, 87) ]].quantize(4));
 }
 
+function finaleSolo() {
 createTrack(8).play([
 [ 4.50, d6(0.35, 94) ],
 [ 5.00, f6(0.56, 82) ],
@@ -789,11 +790,14 @@ createTrack(8).play([
 [ 59.00, d6(0.48, 88) ],
 [ 59.50, c6(0.64, 69) ],
 [ 60.00, d6(3.00, 95) ]]);
+}
+
 
 // === 6 variation rounds (all with drums) ===
 // 1-2: warm pad + lead + intro D bass · 2 adds jumppad · 3-4: italo bass (chords) · 5-6: intro D bass, descending A# C G
 for (let round = 0; round < 6; round++) {
     if (round < 5) finaleWarmpad();   // final round uses the recorded finaleStrings() on ch6 instead
+    if (round === 4) finaleSolo();   // recorded solo lead — spans the last two rounds (after the italo-disco)
     finaleLead(round === 5);
     if (round >= 1) finaleJump();
     if (round <= 1) {

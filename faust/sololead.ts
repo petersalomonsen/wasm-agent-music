@@ -209,7 +209,7 @@ export class SololeadDsp {
         this.fSlow8 = (0.30000001192092896 * this.fSlow7);
         this.fSlow9 = (<f32>(this.fHslider4) * (this.fSlow8 + 0.8500000238418579));
         this.fSlow10 = (700.0 * (this.fSlow8 + 0.699999988079071));
-        this.fSlow11 = (1.5 * ((0.6499999761581421 * this.fSlow7) + 0.3499999940395355));
+        this.fSlow11 = (1.2000000476837158 * ((0.6499999761581421 * this.fSlow7) + 0.3499999940395355));
     }
     frame(inputs: StaticArray<f32>, outputs: StaticArray<f32>): void {
         let fRecCur941: f32 = (this.fSlow2 * (this.fSlow5 + this.fRec941));

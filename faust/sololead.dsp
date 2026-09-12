@@ -33,7 +33,7 @@ aenv = en.adsr(0.0015, 0.08, 0.8, 0.3, gate);
 vel = 0.35 + 0.65 * gain;
 sat(x) = ma.tanh(x);
 
-process = (filtered * drive : sat) * aenv * vel * 1.5;
+process = (filtered * drive : sat) * aenv * vel * 1.2;
 
 // --- channel effect: dotted-eighth echo at 125 BPM, tail survives note release ---
 echotime = hslider("echotime", 0.36, 0.01, 2.0, 0.001);
