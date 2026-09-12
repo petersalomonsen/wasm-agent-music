@@ -657,6 +657,30 @@
   {
    "role": "agent",
    "text": "Let me make the replacement and actually measure both ranges rather than guess.Done — `finaleWarmpad()` is now gated out of the final round (`if (round < 5)`), so round 5 uses only your recorded `finaleStrings()` on ch6. Compiled OK.\n\nOn your question — measured from the note data, they're actually **almost the same range**, not lower:\n- **finaleWarmpad**: g5 .. g6 (mean ≈ c6)\n- **finaleStrings**: g5 .. f6 (mean ≈ c6)\n\nSame bottom (g5), same center (c6); the warmpad just reaches one note higher (g6 vs f6). So swapping one for the other won't shift the register — it's the same instrument (ch6 warmpad voice) playing a very similar voicing, so what changes in round 5 is the *performance/timing* of your recorded take rather than the pitch range."
+  },
+  {
+   "role": "user",
+   "text": "Master this track for Spotify and YouTube."
+  },
+  {
+   "role": "agent",
+   "text": "No mastering tools or specialist are exposed in this session, so I'll wire in the committed mastering chain directly (like I did with the reverb). Let me read the mastering doc and the chain files."
+  },
+  {
+   "role": "user",
+   "text": "do you have mastering tools and specialist now?"
+  },
+  {
+   "role": "agent",
+   "text": "No — I checked. In this session I do **not** have the mastering tooling the memory describes:\n\n- **`probe_mix`** (BS.1770 LUFS / true-peak / spectrum measurement) — not available.\n- **`auto_master`** (the numeric converger) — not available.\n- **`master_mix`** tool / the **mastering specialist** — not available; no such agent shows up in the specialist list either.\n\nI searched for them (ToolSearch found nothing matching) and listed agents (only peer editor sessions, no mastering role). So the measured Mixea-style loop can't run from here.\n\nWhat I *do* have is the chain itself — `fx/mastering.dsp` → the `Mastering` class with `processOutputline()`, exported from `globalimports`. I can wire it into `postprocess()` by hand (the three-line pattern from the doc) alongside/instead of the current Zita reverb, and set sensible streaming defaults (`gainDb`, `limiterCeilingDb = -1.5`, `lowMonoHz = 120`). But I **cannot measure the result** — no probe_mix, and `probe_instrument`/`song_summary` don't run the full mix through `postprocess()`. So I couldn't verify it actually hits −14 LUFS / −1 dBTP; that part would be blind and you'd have to check it (e.g. the CLI `tools/mastertest/probe-mix.mjs --auto`).\n\nTwo honest options:\n1. **Run it outside this session** — `node ../tools/mastertest/probe-mix.mjs <project> --auto --write` does the real measured mastering and writes the converged settings back. That's the intended path and the only one that's measurement-driven.\n2. **I wire the chain in blind** from here with reasonable defaults, and you measure/adjust afterward.\n\nWhich do you want? If it's (2), note there's a wrinkle: `postprocess()` currently runs the Zita master reverb, so I'd need to run the reverb **then** the mastering chain in order — tell me if you want to keep the reverb."
+  },
+  {
+   "role": "user",
+   "text": "I've restarted the studio agent, now you should have the tools and the specialist"
+  },
+  {
+   "role": "agent",
+   "text": "Now I have them — `master_mix` (the specialist) and `probe_mix` (measurement). Let me compile first, take a *before* measurement, then delegate the mastering.*Before* master: **−22.0 LUFS** (8 LU under target), true peak −8.2 dBTP (lots of headroom), slightly sub-heavy. Now I'll hand it to the mastering specialist for streaming/video.Mastered and **verified by measurement** — the specialist's own `probe_mix` after finishing:\n\n## MASTER OK for streaming & video (Spotify / YouTube / Tidal)\n| | Before | After | Target |\n|---|---|---|---|\n| Integrated loudness | −22.0 LUFS | **−14.2 LUFS** | −14 ±1 ✓ |\n| True peak | −8.2 dBTP | **−1.2 dBTP** | ≤ −1 ✓ |\n| PLR (dynamics) | 13.8 dB | **13.1 dB** | punch intact ✓ |\n| Clipped samples | 0 | **0** | ✓ |\n\n**What it did** (wired into `postprocess()`, running *after* your Zita reverb, wet 0.30 untouched):\n- `gainDb = 13` — the +8 LU lift to reach −14, limiter catching the peaks.\n- `limiterCeilingDb = −1.5` — lands true peak at −1.2 dBTP, safe under codecs.\n- `highpassHz = 35` — tamed the hot sub band (−3.7 → −6.6 dB of total). No tilt/mono needed.\n- **No mix changes** were required, and no squash: crest actually went *up* to 15.3 dB.\n- Bars 113–114 (−32.5 LUFS) left alone — that's your intentional 4-beat decay tail, exactly as briefed.\n\nSince Spotify/YouTube normalize *down* to ~−14, a louder master would just get turned down and lose headroom — so −14.2 is the right landing spot for both.\n\n**One thing only your ears can judge** (the specialist flagged it, and I can't hear it): whether the 35 Hz high-pass thins the kick at all, and whether the limiter — working ~1 dB on the loudest sections (bars ~49–108) — dulls any transients there. Have a listen; if the kick feels light I can drop `highpassHz` back toward 25–30, or if it's too limited I can lower `gainDb` a touch and re-measure. It's compiled and saved, so it's export-ready now."
   }
  ]
 }

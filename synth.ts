@@ -1,3 +1,5 @@
+import { Mastering } from '../mixes/globalimports';
+const mastering = new Mastering();
 import { midichannels, MidiChannel, MidiVoice, SineOscillator, Envelope, notefreq, freeverb, midiLevelToGain, outputline } from './globalimports';
 import { Kick } from '../faust/kick';
 import { Hihat } from '../faust/hihat';
@@ -38,6 +40,11 @@ class Piano extends MidiVoice {
 }
 
 export function initializeMidiSynth(): void {
+    // --- mastering: set by auto_master / the mastering specialist (probe_mix measures the result) ---
+    mastering.gainDb = 13.0;
+    mastering.limiterCeilingDb = -1.5;
+    mastering.highpassHz = 35.0;
+    // --- end mastering ---
     midichannels[0] = new MidiChannel(2, (channel: MidiChannel) => new Kick(channel));
     midichannels[1] = new MidiChannel(3, (channel: MidiChannel) => new Hihat(channel));
     midichannels[2] = new MidiChannel(8, (channel: MidiChannel) => new Pad(channel));
@@ -68,4 +75,5 @@ export function postprocess(): void {
     outputline.left += mv.signal.left * masterReverbWet;
     outputline.right += mv.signal.right * masterReverbWet;
     mv.signal.clear();
+    mastering.processOutputline();
 }
