@@ -638,10 +638,62 @@ function finaleIntroBass() {
     ].repeat(7));
 }
 
+function finaleStrings() {
+createTrack(6).play([
+[ 0.00, a5(1.72, 89) ],
+[ 0.00, d6(1.91, 88) ],
+[ 0.01, f6(1.91, 89) ],
+[ 1.98, g5(1.69, 84) ],
+[ 1.97, c6(1.74, 87) ],
+[ 1.96, e6(1.78, 88) ],
+[ 3.94, c6(1.23, 72) ],
+[ 3.99, g5(1.22, 82) ],
+[ 3.97, d6(1.29, 87) ],
+[ 5.48, g5(2.20, 78) ],
+[ 5.45, b5(2.35, 89) ],
+[ 5.45, d6(2.36, 79) ],
+[ 8.02, a5(1.77, 95) ],
+[ 8.03, f6(1.84, 89) ],
+[ 7.99, d6(1.90, 102) ],
+[ 10.06, a5(1.54, 69) ],
+[ 10.06, c6(1.60, 83) ],
+[ 10.07, e6(1.61, 84) ],
+[ 11.96, c6(1.22, 70) ],
+[ 12.00, g5(1.22, 93) ],
+[ 11.97, d6(1.32, 87) ],
+[ 13.56, g5(1.92, 82) ],
+[ 13.53, b5(2.16, 88) ],
+[ 13.52, d6(2.21, 64) ],
+[ 15.96, a5(1.69, 94) ],
+[ 15.99, f6(1.69, 87) ],
+[ 15.94, d6(1.84, 89) ],
+[ 18.02, a5(1.66, 90) ],
+[ 18.01, e6(1.72, 84) ],
+[ 17.99, c6(1.74, 88) ],
+[ 19.99, g5(1.11, 88) ],
+[ 19.97, c6(1.16, 70) ],
+[ 19.98, d6(1.22, 84) ],
+[ 21.51, g5(2.00, 83) ],
+[ 21.49, b5(2.03, 88) ],
+[ 21.49, d6(2.19, 68) ],
+[ 23.93, as5(1.74, 98) ],
+[ 23.96, f6(1.83, 82) ],
+[ 23.91, d6(1.89, 72) ],
+[ 26.01, g5(1.64, 95) ],
+[ 26.00, c6(1.71, 92) ],
+[ 26.01, e6(1.71, 92) ],
+[ 28.02, g5(1.15, 90) ],
+[ 27.97, c6(1.20, 75) ],
+[ 28.00, d6(1.23, 88) ],
+[ 29.49, g5(2.14, 89) ],
+[ 29.46, d6(2.21, 63) ],
+[ 29.47, b5(2.21, 87) ]].quantize(4));
+}
+
 // === 6 variation rounds (all with drums) ===
 // 1-2: warm pad + lead + intro D bass · 2 adds jumppad · 3-4: italo bass (chords) · 5-6: intro D bass, descending A# C G
 for (let round = 0; round < 6; round++) {
-    finaleWarmpad();
+    if (round < 5) finaleWarmpad();   // final round uses the recorded finaleStrings() on ch6 instead
     finaleLead(round === 5);
     if (round >= 1) finaleJump();
     if (round <= 1) {
@@ -661,6 +713,7 @@ for (let round = 0; round < 6; round++) {
         await finaleKick();
     } else {
         // final round: drop hats & snare for the last 4 beats — only the kick plays, on the jump-pad stabs
+        finaleStrings();       // recorded string/warm-pad take, featured in the final round
         finaleHats(28);
         finaleBackbeat(28);
         finaleDescBassEnding();
@@ -668,5 +721,7 @@ for (let round = 0; round < 6; round++) {
     }
 }
 stopRecording();
+
+await waitDuration(4);   // 4 beats of silence so instruments/reverb fully decay before the loop
 
 loopHere();
