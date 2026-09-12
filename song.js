@@ -690,7 +690,6 @@ createTrack(6).play([
 [ 29.47, b5(2.21, 87) ]].quantize(4));
 }
 
-playFromHere();
 createTrack(8).play([
 [ 4.50, d6(0.35, 94) ],
 [ 5.00, f6(0.56, 82) ],
@@ -793,8 +792,7 @@ createTrack(8).play([
 
 // === 6 variation rounds (all with drums) ===
 // 1-2: warm pad + lead + intro D bass · 2 adds jumppad · 3-4: italo bass (chords) · 5-6: intro D bass, descending A# C G
-for (let round = 4; round < 6; round++) {
-    if (round === 4) startRecording();   // arm recording for the last two rounds — play the ch8 solo lead live here
+for (let round = 0; round < 6; round++) {
     if (round < 5) finaleWarmpad();   // final round uses the recorded finaleStrings() on ch6 instead
     finaleLead(round === 5);
     if (round >= 1) finaleJump();
@@ -822,7 +820,6 @@ for (let round = 4; round < 6; round++) {
         await finaleKickEnding();
     }
 }
-stopRecording();
 
 await waitDuration(4);   // 4 beats of silence so instruments/reverb fully decay before the loop
 
