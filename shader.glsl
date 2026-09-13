@@ -27,6 +27,7 @@ uniform float uLights;    // 0 = dark stage (white hero spot) .. 1 = disco rig u
 uniform float uFloor;     // 0 = void .. 1 = tiled dancefloor
 uniform float uHero;      // 0 = empty spotlit stage .. 1 = lone hero has stepped in
 uniform float uItalo;     // 0 = one arm-move per beat .. 1 = italo 8th-note moves, mirroring every 2 beats
+uniform float uRunning;   // 0 = front-facing dance .. 1 = turned sideways doing the running man (finale)
 
 const float BPM = 125.0;
 const float HALFPI = 1.5707963;
@@ -60,6 +61,15 @@ float sdEll(vec2 p, vec2 c, vec2 dir, float ha, float hb) {
   vec2 n = vec2(q.x / ha, q.y / hb);
   float e = length(n);
   return (e - 1.0) * min(ha, hb);
+}
+
+// running-man leg pose for eighth-note slot m (0..3): x = thigh angle (+ = forward), y = knee bend.
+// slots step: back, back, knee-up, planted-front.
+vec2 rmLeg(float m) {
+  if (m < 0.5) return vec2( 0.00, 0.20);   // slot 0: standing foot centred under the hip (partner's knee is up)
+  if (m < 1.5) return vec2(-0.50, 0.12);   // slot 1: trailing leg behind the hips (both feet down)
+  if (m < 2.5) return vec2( 1.10, 1.60);   // slot 2: knee driven high up-front, shin tucked toward centre
+  return vec2( 0.50, 0.15);                 // slot 3: foot planted in front of the hips (both feet down)
 }
 
 // Project a dancer's local joint (2D, in the figure's own plane) to the screen.
@@ -237,6 +247,50 @@ void main() {
           float aFL =  0.62 * wv; vec2 nLo = eLo + 0.15 * vec2(-cos(aFL), sin(aFL));
           float aUR =  0.22 * wv; vec2 eRo = sRo + 0.16 * vec2( cos(aUR), sin(aUR));
           float aFR = -0.62 * wv; vec2 nRo = eRo + 0.15 * vec2( cos(aFR), sin(aFR));
+
+          // ---- running man (finale): a SIDEWAYS profile drawn in this same plane, so
+          // local x now reads as forward/back (the running direction). Blended in by
+          // uRunning, leaving the normal/italo dance untouched. Legs alternate a knee-
+          // drive on a 2-beat cycle (one knee pops up-front on the beat while the other
+          // plants and slides back); arms pump in opposition; the torso leans forward. ----
+          float rr = clamp(uRunning, 0.0, 1.0);
+          if (rr > 0.001) {
+            // 2-beat cycle of DISTINCT stepped poses, snapping onto kick / hi-hat / snare / off-beat.
+            float e2 = floor(bb * 2.0);               // eighth-note index
+            float ef = fract(bb * 2.0);               // phase within the eighth
+            float snap = smoothstep(0.5, 1.0, ef);    // hold the pose, then step to the next ON the hit
+            float bobR = 0.012 * (0.5 + 0.5 * cos(6.2831853 * ef));   // small drop between hits
+            vec2 rhip = vec2(0.0, -0.05 + bobR);
+            vec2 rshp = rhip + vec2(0.028, 0.34);     // torso leans slightly forward (+x)
+            vec2 rhc  = rshp + vec2(0.03, 0.195);
+            vec2 rhb  = rhc - vec2(0.0, 0.085);
+            // two legs one beat (2 eighths) out of phase; leg A drives its knee up on the kick
+            vec2 legA = mix(rmLeg(mod(e2 + 2.0, 4.0)), rmLeg(mod(e2 + 3.0, 4.0)), snap);   // (thigh, bend)
+            vec2 legB = mix(rmLeg(mod(e2, 4.0)),       rmLeg(mod(e2 + 1.0, 4.0)), snap);
+            float tAa = legA.x, sAa = legA.x - legA.y;
+            vec2 rhipA = rhip;
+            vec2 rkA = rhipA + 0.20 * vec2(sin(tAa), -cos(tAa));
+            vec2 rfA = rkA   + 0.22 * vec2(sin(sAa), -cos(sAa));
+            float tAb = legB.x, sAb = legB.x - legB.y;
+            vec2 rhipB = rhip;
+            vec2 rkB = rhipB + 0.20 * vec2(sin(tAb), -cos(tAb));
+            vec2 rfB = rkB   + 0.22 * vec2(sin(sAb), -cos(sAb));
+            // each arm pumps opposite its own leg, elbow bent ~90° forward like a runner's
+            vec2 rsA = rshp + vec2( 0.03, -0.01);
+            vec2 rsB = rshp + vec2(-0.03, -0.02);
+            float auA = -0.5 * tAa;
+            float auB = -0.5 * tAb;
+            vec2 reA = rsA + 0.15 * vec2(sin(auA), -cos(auA));
+            vec2 reB = rsB + 0.15 * vec2(sin(auB), -cos(auB));
+            vec2 rnA = reA + 0.16 * vec2(sin(auA + 1.6), -cos(auA + 1.6));   // forearm up-forward
+            vec2 rnB = reB + 0.16 * vec2(sin(auB + 1.6), -cos(auB + 1.6));
+            // blend every local joint toward the profile pose
+            hip = mix(hip, rhip, rr); shp = mix(shp, rshp, rr); hc = mix(hc, rhc, rr); hb = mix(hb, rhb, rr);
+            hpL = mix(hpL, rhipA, rr); kLo = mix(kLo, rkA, rr); fLo = mix(fLo, rfA, rr);
+            hpR = mix(hpR, rhipB, rr); kRo = mix(kRo, rkB, rr); fRo = mix(fRo, rfB, rr);
+            sLo = mix(sLo, rsA, rr); eLo = mix(eLo, reA, rr); nLo = mix(nLo, rnA, rr);
+            sRo = mix(sRo, rsB, rr); eRo = mix(eRo, reB, rr); nRo = mix(nRo, rnB, rr);
+          }
 
           // project all joints to screen
           vec2 Php = jp(hip, base, WX, ro, fwd, rgt, upv, focal);

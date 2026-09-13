@@ -133,7 +133,7 @@ function playPadleadHarmony() {
 
 // one silent bar at the top: set the opening stage (lone hero, dark, no floor/lights)
 // and let the first command type in over the silence before the beat drops
-setVisual('uCrowd', 0); setVisual('uZoom', 0); setVisual('uCamMove', 0); setVisual('uLights', 0); setVisual('uFloor', 0); setVisual('uHero', 0); setVisual('uItalo', 0);
+setVisual('uCrowd', 0); setVisual('uZoom', 0); setVisual('uCamMove', 0); setVisual('uLights', 0); setVisual('uFloor', 0); setVisual('uHero', 0); setVisual('uItalo', 0); setVisual('uRunning', 0);
 agentPrompt("four-on-the-floor kick in D, 125 BPM", "kick locked in - dark empty stage");
 await waitDuration(4);
 
@@ -843,7 +843,7 @@ createTrack(8).play([
 // === 6 variation rounds (all with drums) ===
 // 1-2: warm pad + lead + intro D bass · 2 adds jumppad · 3-4: italo bass (chords) · 5-6: intro D bass, descending A# C G
 for (let round = 0; round < 6; round++) {
-    if (round === 0) setVisual('uItalo', 0);   // finale opens four-on-the-floor
+    if (round === 0) { setVisual('uItalo', 0); setVisual('uRunning', 1, 3.0); }   // finale opens four-on-the-floor; dancers turn sideways into the running man
     if (round === 2) setVisual('uItalo', 1);   // italo bass returns → double-time arms
     if (round === 4) setVisual('uItalo', 0);   // back to four-on-the-floor for the close
     if (round < 5) finaleWarmpad();   // final round uses the recorded finaleStrings() on ch6 instead
@@ -893,6 +893,7 @@ for (let round = 0; round < 6; round++) {
     }
 }
 
+setVisual('uRunning', 0, 2.0);   // dancers straighten back to front as the finale winds down
 hideText({ fade: 2 });   // fade the final prompt out as the last chord rings down
 await waitDuration(4);   // 4 beats of silence so instruments/reverb fully decay before the loop
 
