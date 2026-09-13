@@ -1,5 +1,5 @@
 /*
- * "Prompted" — italo-disco / Van-Halen-"Jump"-flavoured instrumental, D minor, 125 BPM.
+ * "Prompted" — italo-disco instrumental, D minor, 125 BPM.
  * Music & code (c) 2026 Peter J. Salomonsen — petersalomonsen.com
  * Licensed under CC BY-NC 4.0.
  */

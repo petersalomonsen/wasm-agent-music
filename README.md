@@ -1,6 +1,6 @@
 # Prompted
 
-An italo-disco / Van-Halen-"Jump"-flavoured instrumental in D minor at 125 BPM,
+An italo-disco instrumental in D minor at 125 BPM,
 made with **[WebAssembly Music](https://github.com/petersalomonsen/javascriptmusic)** —
 a browser DAW where the notes, the arrangement, the synth instruments (written in
 the [Faust](https://faust.grame.fr/) DSP language) and the reactive visuals are all
@@ -23,7 +23,7 @@ instruction.
 Open it straight in the app — it clones this repo, compiles, and plays entirely in
 your browser:
 
-**[▶ Open "Prompted" in WebAssembly Music](https://webassemblymusic.pages.dev/?gitrepo=wasm-music-prompted&remoteUrl=https://git-cors-proxy.webassemblymusic.pages.dev/gitproxy/github.com/petersalomonsen/wasm-music-prompted.git)**
+**[▶ Open "Prompted" in WebAssembly Music](https://webassemblymusic.pages.dev/?gitrepo=wasm-music-prompted&remote=https://webassemblymusic.pages.dev/gitproxy/github.com/petersalomonsen/wasm-music-prompted.git)**
 
 ## What's in here
 
@@ -31,7 +31,7 @@ your browser:
 | --- | --- |
 | `song.js` | the sequence — notes, arrangement, visual cues and the on-screen agent prompts |
 | `synth.ts` | the synth: the instruments combined in AssemblyScript, plus the Zita-rev1 master reverb and mastering chain |
-| `faust/` | the instruments — kick, hi-hat, snare, pads, italo bass, "Jump" stab pad, solo lead and master reverb — in Faust |
+| `faust/` | the instruments — kick, hi-hat, snare, pads, italo bass, stab pad, solo lead and master reverb — in Faust |
 | `shader.glsl` | the visualizer: a 3D stage of dancing figures under sweeping stage lights, with the typed-out prompt layer |
 | `studioagent-session.json` | the conversation with the studio agent that built the song — it travels with the repo |
 
@@ -41,7 +41,7 @@ your browser:
 | --- | --- |
 | intro | four-on-the-floor kick, off-beat hats and a pulsing bass on D; the first dancer steps into the spotlight |
 | verse / chorus | detuned saw pad over Dm–F–G–Bb–C, then a bright lead on top, harmonised in thirds on the last round |
-| break / drop | "Jump"-style stab chords take over, then an octave-pumping italo-disco bass under a recorded lead take |
+| break / drop | brass-like stab chords take over, then an octave-pumping italo-disco bass under a recorded lead take |
 | breakdown | warm low-pass pad chords with the lead melody over the beat |
 | finale | six variation rounds stacking the recorded pad, lead and stab takes, a snare-roll build, an italo section, a live synth solo, and two final chords with the dancers frozen in pose |
 
