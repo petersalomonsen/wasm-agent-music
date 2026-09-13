@@ -20,6 +20,12 @@ uniform float smoothedNoteStates[128];
 uniform sampler2D uText;                  // showText() layer
 uniform sampler2D uTextPrev;
 uniform float uTextMix;
+uniform float uCrowd;     // 0 = lone hero .. 1 = full crowd revealed  (song setVisual)
+uniform float uZoom;      // 0 = close on the hero .. 1 = pulled back to the group
+uniform float uCamMove;   // 0 = locked camera .. 1 = moving orbit/tour
+uniform float uLights;    // 0 = dark stage (white hero spot) .. 1 = disco rig up
+uniform float uFloor;     // 0 = void .. 1 = tiled dancefloor
+uniform float uHero;      // 0 = empty spotlit stage .. 1 = lone hero has stepped in
 
 const float BPM = 125.0;
 const float HALFPI = 1.5707963;
@@ -57,10 +63,9 @@ vec3 lightAt(vec3 P, float t) {
     float fall = 1.0 / (1.0 + 0.06 * dist * dist);
     acc += cc * cone * fall;
   }
-  acc *= 0.15 + 0.85 * smoothstep(7.0, 13.0, t);   // sweeping rig comes up as the crowd is revealed
-  // a white follow-spot on the lone hero (front-centre) during the intro; fades
-  // out as the crowd is revealed.
-  float introFade = 1.0 - smoothstep(9.0, 15.0, t);
+  acc *= uLights;                                  // the sweeping rig comes up on the "lights" cue
+  // a white follow-spot on the lone hero (front-centre); on until the disco rig takes over
+  float introFade = 1.0 - uLights;
   vec3 lpH = vec3(0.0, 6.0, 2.1);
   vec3 aimH = normalize(vec3(0.0, -1.0, -0.22));
   vec3 dh = P - lpH; float distH = length(dh) + 1e-3;
@@ -90,12 +95,10 @@ void main() {
   onset  = clamp(onset  / 18.0, 0.0, 1.0);
   float li = 0.35 + 0.9 * energy + 0.5 * onset;
 
-  // ---- cinematic camera ----
-  float hold = 8.0;                                   // hero alone this long (intro kept)
-  float s = max(0.0, t - hold);
-  float pull = smoothstep(0.0, 8.0, s);               // faster dolly back
-  float tour = smoothstep(6.0, 12.0, s);              // blend into the moving tour
-  float q = max(0.0, s - 6.0);                        // tour clock
+  // ---- staged camera (driven by the song's setVisual cues) ----
+  float pull = uZoom;                                 // 0 close on hero .. 1 pulled back to the group
+  float tour = uCamMove;                              // 0 locked .. 1 moving orbit/tour
+  float q = t;                                        // orbit clock, blended in by uCamMove
 
   vec3 Cc = vec3(0.0, 0.0, -1.2);                     // crowd centre on the floor
   vec3 roIntro   = vec3(0.0, 0.75, FRONTZ + 2.1);
@@ -140,7 +143,7 @@ void main() {
       vec3 tile = mix(vec3(0.02, 0.02, 0.035), vec3(0.06, 0.06, 0.09), chk);
       vec3 pool = lightAt(F, t) * li * (0.4 + 0.5 * chk);          // glossy tiles reflect more
       float distFade = exp(-fd * 0.04);                            // fade toward the horizon
-      col = min((tile + pool) * distFade, vec3(1.2));              // clamp so pools don't blow out
+      col = min((tile + pool) * distFade * uFloor, vec3(1.2));     // floor fades in on the "floor" cue
     }
   }
 
@@ -155,7 +158,7 @@ void main() {
 
   // ---- crowd (camera-facing billboards standing on the floor) ----
   float beat = t * (BPM / 60.0);
-  float crowdFade = smoothstep(hold - 1.0, hold + 4.0, t);   // open on the hero alone
+  float crowdFade = uCrowd;                                  // crowd revealed on the "zoom out" cue
   float aa = 1.6 / resolution.y;
   float bestZ = 1e9, bestCov = 0.0;
   vec3  bestCol = vec3(1.0);
@@ -225,14 +228,16 @@ void main() {
           dm = min(dm, sdSeg(uv, PsL, PeL)); dm = min(dm, sdSeg(uv, PeL, PnL));
           dm = min(dm, sdSeg(uv, PsR, PeR)); dm = min(dm, sdSeg(uv, PeR, PnR));
           dm = min(dm, abs(length(uv - Phc) - 0.085 * sca));     // head — always a circle
-          float cov = (1.0 - smoothstep(lwf, lwf + aa, dm)) * mix(crowdFade, 1.0, isHero);
+          float cov = (1.0 - smoothstep(lwf, lwf + aa, dm)) * mix(crowdFade, uHero, isHero);
           if (cov > 0.01 && zc < bestZ) {                        // nearest covering dancer wins
             bestZ = zc; bestCov = cov;
             vec3 dc = 0.55 + 0.45 * cos(6.2831 * hash21(vec2(fr + 3.0, fc - 2.0)) + vec3(0.0, 2.1, 4.2));
             vec3 baseC = mix(dc, vec3(1.0), isHero);
             vec3 Lc = lightAt(base + vec3(0.0, 0.9, 0.0), t) * li;
-            float bright = 0.26 + 1.2 * (Lc.r + Lc.g + Lc.b) / 3.0;
-            bestCol = baseC * clamp(bright, 0.0, 1.5) + Lc * 0.12;
+            // a neutral fill arrives with the crowd so they read before the lights,
+            // then gives way to the coloured rig once the lights are up
+            float bright = 0.26 + 0.75 * uCrowd * (1.0 - uLights) + 1.2 * (Lc.r + Lc.g + Lc.b) / 3.0;
+            bestCol = baseC * clamp(bright, 0.0, 1.6) + Lc * 0.12;
           }
         }
       }

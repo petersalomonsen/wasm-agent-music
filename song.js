@@ -131,8 +131,10 @@ function playPadleadHarmony() {
 
 
 
-// one silent bar at the top so the first command types in over silence before the beat drops
-agentPrompt("kick beat + offbeat hats + saw bass in D", "four-on-the-floor, 125 BPM");
+// one silent bar at the top: set the opening stage (lone hero, dark, no floor/lights)
+// and let the first command type in over the silence before the beat drops
+setVisual('uCrowd', 0); setVisual('uZoom', 0); setVisual('uCamMove', 0); setVisual('uLights', 0); setVisual('uFloor', 0); setVisual('uHero', 0);
+agentPrompt("four-on-the-floor kick in D, 125 BPM", "kick locked in - dark empty stage");
 await waitDuration(4);
 
 // === PART "intro" (bars 1-8): drums + pulsing intro bass, played twice ===
@@ -141,6 +143,7 @@ const introHihat = createTrack(1, 4);
 const introBass  = createTrack(3, 4);
 
 for (let introRep = 0; introRep < 2; introRep++) {
+    if (introRep === 1) setVisual('uHero', 1, 2.0);   // second intro round: the lone dancer steps into the spotlight
     introBass.steps(4, [
         d2(0.2), d2(0.1), d2(0.2), d2(0.1),
         d2(0.2), d2(0.1), d2(0.2), d2(0.1),
@@ -149,14 +152,19 @@ for (let introRep = 0; introRep < 2; introRep++) {
     ].repeat(3));
 
     introHihat.steps(4, [ , , fs3, null ].repeat(15));
-    await introKick.steps(4, [ c2, , , , ].repeat(15));
+    if (introRep === 1) {
+        await introKick.steps(4, [ c2, , , , ].repeat(11));   // 12 beats — to beat 32
+        agentPrompt("add a fat pad, chords Dm F G Bb C", "pad in - lush detuned saws");   // one bar before the verse
+        await introKick.steps(4, [ c2, , , , ].repeat(3));    // 4 beats — to beat 36
+    } else {
+        await introKick.steps(4, [ c2, , , , ].repeat(11));   // 12 beats — to beat 16
+        agentPrompt("bring a dancer into the spotlight", "spotlight up - one dancer stepping in");   // one bar before the dancer enters
+        await introKick.steps(4, [ c2, , , , ].repeat(3));    // 4 beats — to beat 20
+    }
 }
 
 // === PART "verse" (bars 9-16, no lead) then PART "chorus" (bars 17-24, adds padlead lead) — progression Dm-F-G-A#-C ===
 for (let rep = 0; rep < 4; rep++) {
-    if (rep === 0) agentPrompt("add a fat pad, chords Dm F G Bb C", "pad in - lush detuned saws");
-    if (rep === 1) agentPrompt("bring in a bright lead up top", "lead in, octave 6-7");
-    if (rep === 3) agentPrompt("harmonize that lead in thirds", "thirds added under the lead");
     if (rep >= 1) playPadlead();
     if (rep === 3) playPadleadHarmony();
 
@@ -167,24 +175,35 @@ for (let rep = 0; rep < 4; rep++) {
     await kick.steps(4, [ c2, , , , ].repeat(7));
 
     // Section 2: F major
+    if (rep === 1) agentPrompt("zoom out - bring on the whole crowd", "revealing the dancers");   // beat 76: one bar before the reveal
+    if (rep === 2) setVisual('uCamMove', 1, 6.0);                                                 // beat 108: camera starts its slow orbit
+    if (rep === 3) agentPrompt("lay down the tiled dancefloor", "glossy tiles, reflections on");  // beat 140: one bar before the floor
     hihat.steps(4, [ , , fs3, null ].repeat(7));
     pad.steps(4, [ [f4, a4, c5], , [f4, a4, c5], , ].repeat(7));
     bass.steps(4, [ f2, null, f3, null ].repeat(7));
     await kick.steps(4, [ c2, , , , ].repeat(7));
 
     // Section 3: G major
+    if (rep === 1) { setVisual('uCrowd', 1, 3.0); setVisual('uZoom', 1, 4.5); }          // beat 84: crowd revealed, camera pulls back
+    if (rep === 2) agentPrompt("hit the disco lights", "rig sweeping - four colours");   // beat 116: one bar before the lights
+    if (rep === 3) setVisual('uFloor', 1, 3.0);                                          // beat 148: floor fades in
     hihat.steps(4, [ , , fs3, null ].repeat(7));
     pad.steps(4, [ [g4, b4, d5], , [g4, b4, d5], , ].repeat(7));
     bass.steps(4, [ g2, null, g3, null ].repeat(7));
     await kick.steps(4, [ c2, , , , ].repeat(7));
 
     // Section 4a: A# major
+    if (rep === 2) setVisual('uLights', 1, 3.5);   // beat 124: disco rig comes up
     hihat.steps(4, [ , , fs3, null ].repeat(3));
     pad.steps(4, [ [as4, d5, f5], , [as4, d5, f5], , ].repeat(3));
     bass.steps(4, [ as2, null, as3, null ].repeat(3));
     await kick.steps(4, [ c2, , , , ].repeat(3));
 
     // Section 4b: C major
+    if (rep === 0) agentPrompt("bring in a bright lead up top", "lead in, octave 6-7");           // beat 64: one bar before the chorus lead
+    if (rep === 1) agentPrompt("now start moving the camera", "slow orbit - engaged");            // beat 96: one bar before the camera move
+    if (rep === 2) agentPrompt("harmonize that lead in thirds", "thirds added under the lead");   // beat 128: one bar before the harmony
+    if (rep === 3) agentPrompt("Jump-style stab chords, drop the pad", "'84 brass stabs - here we go");   // beat 160: one bar before the break
     hihat.steps(4, [ , , fs3, null ].repeat(3));
     pad.steps(4, [ [c5, e5, g5], , [c5, e5, g5], , ].repeat(3));
     bass.steps(4, [ c3, null, c4, null ].repeat(3));
@@ -249,8 +268,6 @@ function introHats() {
 }
 
 // Playthrough 1 - the recorded take (recording armed for this bar)
-agentPrompt("Jump-style stab chords, drop the pad", "'84 brass stabs - here we go");
-
 playJumpChords();
 introHats();
 introBassLine();
@@ -261,10 +278,10 @@ await introKick.steps(4, [ c2, , , , ].repeat(15));
 playJumpChords();
 introHats();
 introBassLine();
-await introKick.steps(4, [ c2, , , , ].repeat(15));
+await introKick.steps(4, [ c2, , , , ].repeat(11));   // 12 beats — to beat 192
+agentPrompt("italo octave bass + a live lead take", "recording armed - play it");   // one bar before the drop
+await introKick.steps(4, [ c2, , , , ].repeat(3));    // 4 beats — to beat 196
 
-
-agentPrompt("italo octave bass + a live lead take", "recording armed - play it");
 
 // "finale" lead melody (recorded on padlead, ch4), spans bars 33-40
 createTrack(4).play([[ 0.56, d6(0.44, 69) ],
@@ -327,12 +344,17 @@ for (let r = 0; r < 2; r++) {
     italoHats(16);
     if (r === 1) italoSnareFillB(16); else italoSnareFillA(16);   // 2nd round hands off to the breakdown → comprehensive fill; else simple fill
     italoBassLine();
-    await introKick.steps(4, [ c2, , , , ].repeat(15));
+    if (r === 1) {
+        await introKick.steps(4, [ c2, , , , ].repeat(11));   // 12 beats — to beat 224
+        agentPrompt("warmer pad, low-pass filter", "softened - top rolled off");   // one bar before the breakdown
+        await introKick.steps(4, [ c2, , , , ].repeat(3));    // 4 beats — to beat 228
+    } else {
+        await introKick.steps(4, [ c2, , , , ].repeat(15));
+    }
 }
 
 // === PART "breakdown" (played twice): warm low-pass pad chords + padlead melody over the beat ===
 for (let f2 = 0; f2 < 2; f2++) {
-    if (f2 === 0) agentPrompt("warmer pad, low-pass filter", "softened - top rolled off");
     // finale2 CHORDS -> WARM PAD (ch6), one octave up, tidied to the 2-beat grid
     warmpad.play([
         [ 0,  d6(1.9, 72), f6(1.9, 72), a6(1.9, 72) ],    // Dm
@@ -371,7 +393,13 @@ for (let f2 = 0; f2 < 2; f2++) {
     italoHats(16);
     if (f2 === 1) italoSnareFillB(16); else italoSnareFillA(16);   // 2nd round hands off to the finale → comprehensive fill; else simple fill
     italoBassLine();
-    await introKick.steps(4, [ c2, , , , ].repeat(15));
+    if (f2 === 1) {
+        await introKick.steps(4, [ c2, , , , ].repeat(11));   // 12 beats — to beat 256
+        agentPrompt("big finale - layer all the takes", "stacking pad, lead, stabs...");   // one bar before the finale
+        await introKick.steps(4, [ c2, , , , ].repeat(3));    // 4 beats — to beat 260
+    } else {
+        await introKick.steps(4, [ c2, , , , ].repeat(15));
+    }
 }
 
 // === PART "finale" (the real finale — 6 variation rounds, each 32 beats): built from the recorded warm pad + lead + jumppad takes ===
@@ -814,8 +842,6 @@ createTrack(8).play([
 // === 6 variation rounds (all with drums) ===
 // 1-2: warm pad + lead + intro D bass · 2 adds jumppad · 3-4: italo bass (chords) · 5-6: intro D bass, descending A# C G
 for (let round = 0; round < 6; round++) {
-    if (round === 0) agentPrompt("big finale - layer all the takes", "stacking pad, lead, stabs...");
-    if (round === 4) agentPrompt("let me solo the last two rounds", "you're live - go");
     if (round === 5) hideText({ fade: 1 });
     if (round < 5) finaleWarmpad();   // final round uses the recorded finaleStrings() on ch6 instead
     if (round === 4) finaleSolo();   // recorded solo lead — spans the last two rounds (after the italo-disco)
@@ -830,7 +856,13 @@ for (let round = 0; round < 6; round++) {
         italoHats(32);
         italoSnareFillA(32);   // both italo rounds get the simple fill (neither hands off to a new section)
         finaleItaloBass();
-        await finaleKick();
+        if (round === 3) {
+            await kick.steps(4, [ c2, , , , ].repeat(27));   // 28 beats — to beat 384
+            agentPrompt("let me solo the last two rounds", "you're live - go");   // one bar before the solo round
+            await kick.steps(4, [ c2, , , , ].repeat(3));    // 4 beats — to beat 388
+        } else {
+            await finaleKick();
+        }
     } else if (round === 4) {
         finaleHats();
         finaleBackbeat(32);    // snare backbeat returns after the italo section
