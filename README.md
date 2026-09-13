@@ -23,7 +23,7 @@ instruction.
 Open it straight in the app — it clones this repo, compiles, and plays entirely in
 your browser:
 
-**[▶ Open "Prompted" in WebAssembly Music](https://webassemblymusic.pages.dev/?gitrepo=prompted&remote=https://git-cors-proxy.webassemblymusic.pages.dev/gitproxy/github.com/petersalomonsen/wasm-music-prompted.git)**
+**[▶ Open "Prompted" in WebAssembly Music](https://webassemblymusic.pages.dev/?gitrepo=wasm-music-prompted&remoteUrl=https://git-cors-proxy.webassemblymusic.pages.dev/gitproxy/github.com/petersalomonsen/wasm-music-prompted.git)**
 
 ## What's in here
 
