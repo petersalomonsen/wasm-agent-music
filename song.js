@@ -907,11 +907,13 @@ for (let round = 0; round < 6; round++) {
     }
 }
 
+// let the final-pose caption breathe half a beat longer before the credits take over
+await waitDuration(0.5);
 // the very end, over the held final pose: the closing agent exchange is the credits —
 // the title as the green "command", the copyright as the blue "reply".
 showText(["> \"Neon Release\"",
           "  (c) 2026 Peter J. Salomonsen - petersalomonsen.com"],
          { ...AGENT_OPTS, size: 24, fade: 3 });
-await waitDuration(8);   // hold the credit through the ring-out while everything decays
+await waitDuration(7.5);   // hold the credit through the ring-out while everything decays
 
 loopHere();
