@@ -28,6 +28,7 @@ uniform float uFloor;     // 0 = void .. 1 = tiled dancefloor
 uniform float uHero;      // 0 = empty spotlit stage .. 1 = lone hero has stepped in
 uniform float uItalo;     // 0 = one arm-move per beat .. 1 = italo 8th-note moves, mirroring every 2 beats
 uniform float uRunning;   // 0 = front-facing dance .. 1 = turned sideways doing the running man (finale)
+uniform float uEndPose;   // 0 = dancing .. 1 = frozen pose A .. 2 = frozen mirrored pose B (last two chords)
 
 const float BPM = 125.0;
 const float HALFPI = 1.5707963;
@@ -311,6 +312,37 @@ void main() {
             hpR = mix(hpR, rhipB, rr); kRo = mix(kRo, rkB, rr); fRo = mix(fRo, rfB, rr);
             sLo = mix(sLo, rsA, rr); eLo = mix(eLo, reA, rr); nLo = mix(nLo, rnA, rr);
             sRo = mix(sRo, rsB, rr); eRo = mix(eRo, reB, rr); nRo = mix(nRo, rnB, rr);
+          }
+
+          // ---- ending pose (final round, last two chords): freeze the WHOLE body and just snap
+          // between two mirrored disco-point positions on each chord stab, then hold — no in-between
+          // dance. uEndPose steps 0 -> 1 -> 2 instantly on the stabs, so there is no easing. ----
+          float endm = clamp(uEndPose, 0.0, 1.0);
+          if (endm > 0.001) {
+            float d = (uEndPose < 1.5) ? 1.0 : -1.0;             // pose A points one way, pose B mirrors it
+            vec2 ehip = vec2(0.02 * d, -0.06);
+            vec2 eshp = ehip + vec2(0.05 * d, 0.34);             // slight lean toward the point
+            vec2 ehc  = eshp + vec2(0.02 * d, 0.195);
+            vec2 ehb  = ehc - vec2(0.0, 0.085);
+            vec2 ehpL = ehip + vec2(-0.06, 0.0), ehpR = ehip + vec2(0.06, 0.0);
+            vec2 efL = vec2(-0.13, -0.46), efR = vec2(0.13, -0.46);   // feet planted apart, standing tall
+            vec2 ekL = mix(ehpL, efL, 0.5), ekR = mix(ehpR, efR, 0.5);
+            vec2 eshL = eshp + vec2(-0.03, -0.02), eshR = eshp + vec2(0.03, -0.02);
+            vec2 upDir = normalize(vec2(d * 0.6, 1.0));           // extended arm: up-diagonal toward d
+            vec2 dnDir = normalize(vec2(-d * 0.5, -0.85));        // other arm: down-diagonal away
+            vec2 shUp = (d > 0.0) ? eshR : eshL;
+            vec2 shDn = (d > 0.0) ? eshL : eshR;
+            vec2 upE = shUp + 0.16 * upDir, upH = upE + 0.16 * upDir;
+            vec2 dnE = shDn + 0.16 * dnDir, dnH = dnE + 0.16 * dnDir;
+            vec2 eRoE = (d > 0.0) ? upE : dnE, nRoE = (d > 0.0) ? upH : dnH;
+            vec2 eLoE = (d > 0.0) ? dnE : upE, nLoE = (d > 0.0) ? dnH : upH;
+            hip = mix(hip, ehip, endm); shp = mix(shp, eshp, endm); hc = mix(hc, ehc, endm); hb = mix(hb, ehb, endm);
+            hpL = mix(hpL, ehpL, endm); hpR = mix(hpR, ehpR, endm);
+            kLo = mix(kLo, ekL, endm); kRo = mix(kRo, ekR, endm);
+            fLo = mix(fLo, efL, endm); fRo = mix(fRo, efR, endm);
+            sLo = mix(sLo, eshL, endm); sRo = mix(sRo, eshR, endm);
+            eLo = mix(eLo, eLoE, endm); nLo = mix(nLo, nLoE, endm);
+            eRo = mix(eRo, eRoE, endm); nRo = mix(nRo, nRoE, endm);
           }
 
           // project all joints to screen

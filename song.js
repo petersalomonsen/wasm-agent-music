@@ -133,7 +133,7 @@ function playPadleadHarmony() {
 
 // one silent bar at the top: set the opening stage (lone hero, dark, no floor/lights)
 // and let the first command type in over the silence before the beat drops
-setVisual('uCrowd', 0); setVisual('uZoom', 0); setVisual('uCamMove', 0); setVisual('uLights', 0); setVisual('uFloor', 0); setVisual('uHero', 0); setVisual('uItalo', 0); setVisual('uRunning', 0);
+setVisual('uCrowd', 0); setVisual('uZoom', 0); setVisual('uCamMove', 0); setVisual('uLights', 0); setVisual('uFloor', 0); setVisual('uHero', 0); setVisual('uItalo', 0); setVisual('uRunning', 0); setVisual('uEndPose', 0);
 agentPrompt("four-on-the-floor kick in D, 125 BPM", "kick locked in - dark empty stage");
 await waitDuration(4);
 
@@ -889,7 +889,14 @@ for (let round = 0; round < 6; round++) {
         finaleHats(28);
         finaleBackbeat(28);
         finaleDescBassEnding();
-        await finaleKickEnding();
+        finaleKickEnding();        // kick pattern (32 beats): every beat to 28, then only the two stabs (beats 28 & 29.5)
+        // snap the dancers to a pose on each of the two final chord stabs, then hold — no in-between dance.
+        // (waitDuration is the beat-keeper here so the kick pattern stays exactly as recorded.)
+        await waitDuration(28);    // to the first stab (round-beat 28)
+        setVisual('uEndPose', 1);  // stab 1: freeze into pose A
+        await waitDuration(1.5);   // to the second stab (round-beat 29.5)
+        setVisual('uEndPose', 2);  // stab 2: snap to the mirrored pose B, then hold
+        await waitDuration(2.5);   // to the end of the round (round-beat 32)
     }
 }
 
