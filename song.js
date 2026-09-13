@@ -1,5 +1,5 @@
 /*
- * "Neon Release" — italo-disco / Van-Halen-"Jump"-flavoured instrumental, D minor, 125 BPM.
+ * "Prompted" — italo-disco / Van-Halen-"Jump"-flavoured instrumental, D minor, 125 BPM.
  * Music & code (c) 2026 Peter J. Salomonsen — petersalomonsen.com
  * Licensed under CC BY-NC 4.0.
  */
@@ -911,7 +911,7 @@ for (let round = 0; round < 6; round++) {
 await waitDuration(0.5);
 // the very end, over the held final pose: the closing agent exchange is the credits —
 // the title as the green "command", the copyright as the blue "reply".
-showText(["> \"Neon Release\"",
+showText(["> \"Prompted\"",
           "  (c) 2026 Peter J. Salomonsen - petersalomonsen.com"],
          { ...AGENT_OPTS, size: 24, fade: 3 });
 await waitDuration(7.5);   // hold the credit through the ring-out while everything decays

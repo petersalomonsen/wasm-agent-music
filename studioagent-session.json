@@ -977,6 +977,14 @@
   {
    "role": "agent",
    "text": "Done — the `stereo_freeverb` and its `revmix` slider are gone. The `sololead` effect is now **just the stereo ping-pong echo** (echotime 0.36, echofb 0.65, echomix 0.5) over the dry voice; the voice tone itself is unchanged. Compiled OK, channel 8 audible and pitch-tracking.\n\nLet me apply it to the running track.Applied and compiled OK. The `sololead` now carries **only the stereo ping-pong echo** — no reverb — so the outro lead is drier with the wide L↔R delay repeats. The echo knobs (`echotime` / `echofb` / `echomix`) are still there in `sololead.dsp` if you want to tune it once you hear it. Song untouched (460 beats / 4856 notes). Have a listen."
+  },
+  {
+   "role": "user",
+   "text": "What about the title \"Prompted\"? Just that, nothing else."
+  },
+  {
+   "role": "agent",
+   "text": "That's the best one yet — the whole piece is literally a live agent session where every section arrives on a typed prompt, so **\"Prompted\"** *is* the concept. It also lands the pun (a prompted AI, and a prompted performance). Locking it in across the credit and both source headers.Let me render the end credit to confirm the new title displays cleanly.Locked in. The end credit now reads **`> \"Prompted\"`** in green with **`(c) 2026 Peter J. Salomonsen - petersalomonsen.com`** in blue underneath — clean and un-clipped over the frozen final pose.\n\n**\"Prompted\"** is now the title in all three places:\n- the on-screen end credit\n- the song source header\n- the shader source header\n\nCompiled OK, music untouched (460 beats / 4856 notes). Great pick — it names exactly what the whole piece is."
   }
  ]
 }

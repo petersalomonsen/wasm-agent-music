@@ -2,7 +2,7 @@
  * Copyright (c) 2022-2026 Peter Johan Salomonsen ( petersalomonsen.com )
  * Licensed under CC BY-NC 4.0 — see LICENSE
  *
- * Visualizer for "Neon Release" (music & code (c) 2026 Peter J. Salomonsen).
+ * Visualizer for "Prompted" (music & code (c) 2026 Peter J. Salomonsen).
  *
  * "Much" — "the power of many". A real 3D stage: dancers stand on a reflective
  * tiled floor under sweeping coloured stage lights. A cinematic camera opens on
