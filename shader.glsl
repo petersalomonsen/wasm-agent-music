@@ -102,9 +102,9 @@ vec3 lightAt(vec3 P, float t) {
     vec3 aim = normalize(vec3(sweep, -1.0, 0.18));
     vec3 cc = 0.55 + 0.45 * cos(2.0944 * fi + vec3(0.0, 2.1, 4.2)); // four distinct hues
     vec3 dv = P - lp; float dist = length(dv) + 1e-3; vec3 dir = dv / dist;
-    float cone = smoothstep(0.86, 0.97, dot(dir, aim));
-    float fall = 1.0 / (1.0 + 0.06 * dist * dist);
-    acc += cc * cone * fall;
+    float cone = smoothstep(0.80, 0.95, dot(dir, aim));
+    float fall = 1.0 / (1.0 + 0.035 * dist * dist);
+    acc += cc * cone * fall * 1.9;
   }
   acc *= uLights;                                  // the sweeping rig comes up on the "lights" cue
   // a white follow-spot on the lone hero (front-centre); on until the disco rig takes over
@@ -400,8 +400,8 @@ void main() {
             vec3 Lc = lightAt(base + vec3(0.0, 0.9, 0.0), t) * li;
             // a neutral fill arrives with the crowd so they read before the lights,
             // then gives way to the coloured rig once the lights are up
-            float bright = 0.26 + 0.75 * uCrowd * (1.0 - uLights) + 1.2 * (Lc.r + Lc.g + Lc.b) / 3.0;
-            bestCol = baseC * clamp(bright, 0.0, 1.6) + Lc * 0.12;
+            float bright = 0.26 + 0.75 * uCrowd * (1.0 - uLights) + 0.42 * uLights + 2.2 * (Lc.r + Lc.g + Lc.b) / 3.0;
+            bestCol = baseC * clamp(bright, 0.0, 1.7) + Lc * 0.25;
           }
         }
       }
