@@ -1,3 +1,8 @@
+/*
+ * "Neon Release" — italo-disco / Van-Halen-"Jump"-flavoured instrumental, D minor, 125 BPM.
+ * Music & code (c) 2026 Peter J. Salomonsen — petersalomonsen.com
+ * Licensed under CC BY-NC 4.0.
+ */
 setBPM(125);
 
 addInstrument('kick');   // 0
@@ -902,7 +907,11 @@ for (let round = 0; round < 6; round++) {
     }
 }
 
-hideText({ fade: 2 });   // fade the final prompt out as the last chord rings down
-await waitDuration(4);   // 4 beats of silence so instruments/reverb fully decay before the loop
+// the very end, over the held final pose: the closing agent exchange is the credits —
+// the title as the green "command", the copyright as the blue "reply".
+showText(["> \"Neon Release\"",
+          "  (c) 2026 Peter J. Salomonsen - petersalomonsen.com"],
+         { ...AGENT_OPTS, size: 24, fade: 3 });
+await waitDuration(8);   // hold the credit through the ring-out while everything decays
 
 loopHere();
