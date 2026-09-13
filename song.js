@@ -844,7 +844,7 @@ createTrack(8).play([
 // 1-2: warm pad + lead + intro D bass · 2 adds jumppad · 3-4: italo bass (chords) · 5-6: intro D bass, descending A# C G
 for (let round = 0; round < 6; round++) {
     if (round === 0) { setVisual('uItalo', 0); setVisual('uRunning', 1, 3.0); }   // finale opens four-on-the-floor; dancers turn sideways into the running man
-    if (round === 2) setVisual('uItalo', 1);   // italo bass returns → double-time arms
+    if (round === 2) { setVisual('uItalo', 1); setVisual('uRunning', 0, 2.0); }   // italo bass returns → double-time arms; running man ends, camera resumes its orbit
     if (round === 4) setVisual('uItalo', 0);   // back to four-on-the-floor for the close
     if (round < 5) finaleWarmpad();   // final round uses the recorded finaleStrings() on ch6 instead
     if (round === 4) finaleSolo();   // recorded solo lead — spans the last two rounds (after the italo-disco)
@@ -893,7 +893,6 @@ for (let round = 0; round < 6; round++) {
     }
 }
 
-setVisual('uRunning', 0, 2.0);   // dancers straighten back to front as the finale winds down
 hideText({ fade: 2 });   // fade the final prompt out as the last chord rings down
 await waitDuration(4);   // 4 beats of silence so instruments/reverb fully decay before the loop
 

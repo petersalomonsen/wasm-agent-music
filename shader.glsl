@@ -72,6 +72,15 @@ vec2 rmLeg(float m) {
   return vec2( 0.50, 0.15);                 // slot 3: foot planted in front of the hips (both feet down)
 }
 
+// running-man arm pose for slot m (0..3): x = upper-arm angle, y = forearm angle (both from vertical, + = forward).
+// keyed to the SAME slot as that arm's leg, so the front-foot side raises while the trailing side drops.
+vec2 rmArm(float m) {
+  if (m < 0.5) return vec2( 0.00, 1.57);   // slot 0 (standing/middle): upper arm vertical, forearm forward
+  if (m < 1.5) return vec2(-1.30, -0.10);  // slot 1 (behind): upper arm ~straight back, slightly down; forearm down
+  if (m < 2.5) return vec2( 0.00, 1.57);   // slot 2 (knee up/middle): forearm forward
+  return vec2( 1.30, 3.00);                 // slot 3 (front): upper arm ~straight out, slightly down; forearm up
+}
+
 // Project a dancer's local joint (2D, in the figure's own plane) to the screen.
 // The figure stands in the WORLD facing a fixed direction (sideways axis WX,
 // up = world up), so as the camera orbits we see it from different angles —
@@ -158,6 +167,12 @@ void main() {
   vec3 ro     = mix(roDolly, roTour, tour);
   vec3 lookAt = mix(lookDolly, lookTour, tour);
 
+  // running-man finale rounds: lock to a fixed theatre seat — elevated, mid-house, looking down at
+  // the stage from the side. The dancers all face +x, so this seat sees them in clean profile.
+  float seat = clamp(uRunning, 0.0, 1.0);
+  ro     = mix(ro,     vec3(0.0, 4.0, 9.4), seat);
+  lookAt = mix(lookAt, vec3(0.0, 1.05, -1.4), seat);
+
   float focal = 1.8;
   vec3 fwd = normalize(lookAt - ro);
   vec3 rgt = normalize(cross(fwd, vec3(0.0, 1.0, 0.0)));
@@ -211,6 +226,7 @@ void main() {
           float isHero = (r == 0 && c == 4) ? 1.0 : 0.0;
           float jitter = (hash21(vec2(fr, fc)) - 0.5) * 0.06;
           float yaw = (isHero > 0.5) ? 0.0 : (hash21(vec2(fr + 9.0, fc + 4.0)) - 0.5) * 0.9;
+          yaw = mix(yaw, 0.0, clamp(uRunning, 0.0, 1.0));   // running man: everyone turns the same way, seen in profile
           vec3 WX = vec3(cos(yaw), 0.0, sin(yaw));      // sideways axis, FIXED in the world
 
           // pose — local 2D joints (same dance)
@@ -275,15 +291,15 @@ void main() {
             vec2 rhipB = rhip;
             vec2 rkB = rhipB + 0.20 * vec2(sin(tAb), -cos(tAb));
             vec2 rfB = rkB   + 0.22 * vec2(sin(sAb), -cos(sAb));
-            // each arm pumps opposite its own leg, elbow bent ~90° forward like a runner's
+            // arms keyed to the same slots as the legs (see rmArm)
+            vec2 armA = mix(rmArm(mod(e2 + 2.0, 4.0)), rmArm(mod(e2 + 3.0, 4.0)), snap);   // (upper, forearm) angles
+            vec2 armB = mix(rmArm(mod(e2, 4.0)),       rmArm(mod(e2 + 1.0, 4.0)), snap);
             vec2 rsA = rshp + vec2( 0.03, -0.01);
             vec2 rsB = rshp + vec2(-0.03, -0.02);
-            float auA = -0.5 * tAa;
-            float auB = -0.5 * tAb;
-            vec2 reA = rsA + 0.15 * vec2(sin(auA), -cos(auA));
-            vec2 reB = rsB + 0.15 * vec2(sin(auB), -cos(auB));
-            vec2 rnA = reA + 0.16 * vec2(sin(auA + 1.6), -cos(auA + 1.6));   // forearm up-forward
-            vec2 rnB = reB + 0.16 * vec2(sin(auB + 1.6), -cos(auB + 1.6));
+            vec2 reA = rsA + 0.15 * vec2(sin(armA.x), -cos(armA.x));
+            vec2 reB = rsB + 0.15 * vec2(sin(armB.x), -cos(armB.x));
+            vec2 rnA = reA + 0.16 * vec2(sin(armA.y), -cos(armA.y));
+            vec2 rnB = reB + 0.16 * vec2(sin(armB.y), -cos(armB.y));
             // blend every local joint toward the profile pose
             hip = mix(hip, rhip, rr); shp = mix(shp, rshp, rr); hc = mix(hc, rhc, rr); hb = mix(hb, rhb, rr);
             hpL = mix(hpL, rhipA, rr); kLo = mix(kLo, rkA, rr); fLo = mix(fLo, rfA, rr);
