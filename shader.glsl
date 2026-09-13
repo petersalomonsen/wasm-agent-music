@@ -26,6 +26,7 @@ uniform float uCamMove;   // 0 = locked camera .. 1 = moving orbit/tour
 uniform float uLights;    // 0 = dark stage (white hero spot) .. 1 = disco rig up
 uniform float uFloor;     // 0 = void .. 1 = tiled dancefloor
 uniform float uHero;      // 0 = empty spotlit stage .. 1 = lone hero has stepped in
+uniform float uItalo;     // 0 = one arm-move per beat .. 1 = italo 8th-note moves, mirroring every 2 beats
 
 const float BPM = 125.0;
 const float HALFPI = 1.5707963;
@@ -206,7 +207,22 @@ void main() {
           float bb = beat + jitter;
           float ph = fract(bb), bi = floor(bb);
           float crouch = exp(-3.0 * ph);
-          float wv = mix(sin(HALFPI * (bi - 1.0)), sin(HALFPI * bi), smoothstep(0.85, 1.0, ph));
+          // arms — normal: one snap per beat, 4-beat zigzag cycle (0,1,0,-1)
+          float wvNormal = mix(sin(HALFPI * (bi - 1.0)), sin(HALFPI * bi), smoothstep(0.85, 1.0, ph));
+          // arms — italo: 8th-note moves over a 2-BEAT cycle, arriving ON the beat.
+          // Moves land on the kick (beat 1), the first off-beat hat, and the snare (beat 2);
+          // the last off-beat hat is HELD. 3 moves per 2 beats is odd, so the next two beats
+          // mirror the previous two. The swing happens in the TAIL of each 8th so the pose
+          // arrives on the following hit — the same phrasing as the normal once-per-beat dance.
+          float e8 = floor(bb * 2.0);                 // this 8th-note index
+          float ef = fract(bb * 2.0);                 // phase within it
+          float mThis = floor(e8 / 4.0) * 3.0 + min(mod(e8, 4.0), 2.0);          // slot 3 reuses slot 2 → held
+          float e8n = e8 + 1.0;
+          float mNext = floor(e8n / 4.0) * 3.0 + min(mod(e8n, 4.0), 2.0);
+          float pThis = (mod(mThis, 2.0) < 0.5) ? 1.0 : -1.0;   // poses alternate +1 / -1
+          float pNext = (mod(mNext, 2.0) < 0.5) ? 1.0 : -1.0;
+          float wvItalo = mix(pThis, pNext, smoothstep(0.72, 1.0, ef));   // swing arrives on the next hit
+          float wv = mix(wvNormal, wvItalo, clamp(uItalo, 0.0, 1.0));
           vec2 hip = vec2(0.0, -0.06 - 0.06 * crouch);
           vec2 shp = hip + vec2(0.0, 0.34);
           vec2 hc  = shp + vec2(0.0, 0.195);
