@@ -20,6 +20,13 @@ const padlead = createTrack(4);
 const warmpad = createTrack(6);
 const snare = createTrack(7, 1);
 
+// --- on-screen "live agent" captions: a green command + a blue reply, both typed
+// out by the shader (uTextMix drives the typewriter). Music is never touched here. ---
+const AGENT_OPTS = { font: 'monospace', align: 'left', x: 0.035, y: 0.5, size: 40, lineHeight: 1.6, weight: 'bold', fade: 4 };
+function agentPrompt(cmd, reply) {
+    showText(["> " + cmd, "  " + reply], AGENT_OPTS);
+}
+
 // Italo-disco drums: snare on beats 2 & 4, hi-hats on the 2/4 and 3/4 of every beat.
 function italoHats(beats) {
     hihat.steps(4, [ , , fs3, fs3 ].repeat(beats - 1));
@@ -124,6 +131,10 @@ function playPadleadHarmony() {
 
 
 
+// one silent bar at the top so the first command types in over silence before the beat drops
+agentPrompt("kick beat + offbeat hats + saw bass in D", "four-on-the-floor, 125 BPM");
+await waitDuration(4);
+
 // === PART "intro" (bars 1-8): drums + pulsing intro bass, played twice ===
 const introKick  = createTrack(0, 4);
 const introHihat = createTrack(1, 4);
@@ -143,6 +154,9 @@ for (let introRep = 0; introRep < 2; introRep++) {
 
 // === PART "verse" (bars 9-16, no lead) then PART "chorus" (bars 17-24, adds padlead lead) — progression Dm-F-G-A#-C ===
 for (let rep = 0; rep < 4; rep++) {
+    if (rep === 0) agentPrompt("add a fat pad, chords Dm F G Bb C", "pad in - lush detuned saws");
+    if (rep === 1) agentPrompt("bring in a bright lead up top", "lead in, octave 6-7");
+    if (rep === 3) agentPrompt("harmonize that lead in thirds", "thirds added under the lead");
     if (rep >= 1) playPadlead();
     if (rep === 3) playPadleadHarmony();
 
@@ -235,6 +249,7 @@ function introHats() {
 }
 
 // Playthrough 1 - the recorded take (recording armed for this bar)
+agentPrompt("Jump-style stab chords, drop the pad", "'84 brass stabs - here we go");
 
 playJumpChords();
 introHats();
@@ -248,6 +263,8 @@ introHats();
 introBassLine();
 await introKick.steps(4, [ c2, , , , ].repeat(15));
 
+
+agentPrompt("italo octave bass + a live lead take", "recording armed - play it");
 
 // "finale" lead melody (recorded on padlead, ch4), spans bars 33-40
 createTrack(4).play([[ 0.56, d6(0.44, 69) ],
@@ -315,6 +332,7 @@ for (let r = 0; r < 2; r++) {
 
 // === PART "breakdown" (played twice): warm low-pass pad chords + padlead melody over the beat ===
 for (let f2 = 0; f2 < 2; f2++) {
+    if (f2 === 0) agentPrompt("warmer pad, low-pass filter", "softened - top rolled off");
     // finale2 CHORDS -> WARM PAD (ch6), one octave up, tidied to the 2-beat grid
     warmpad.play([
         [ 0,  d6(1.9, 72), f6(1.9, 72), a6(1.9, 72) ],    // Dm
@@ -796,6 +814,9 @@ createTrack(8).play([
 // === 6 variation rounds (all with drums) ===
 // 1-2: warm pad + lead + intro D bass · 2 adds jumppad · 3-4: italo bass (chords) · 5-6: intro D bass, descending A# C G
 for (let round = 0; round < 6; round++) {
+    if (round === 0) agentPrompt("big finale - layer all the takes", "stacking pad, lead, stabs...");
+    if (round === 4) agentPrompt("let me solo the last two rounds", "you're live - go");
+    if (round === 5) hideText({ fade: 1 });
     if (round < 5) finaleWarmpad();   // final round uses the recorded finaleStrings() on ch6 instead
     if (round === 4) finaleSolo();   // recorded solo lead — spans the last two rounds (after the italo-disco)
     finaleLead(round === 5);

@@ -242,11 +242,44 @@ void main() {
 
   col *= clamp(t / 1.5, 0.0, 1.0);                  // fade in
 
-  // ---- text layer (showText from the song) composited over the scene ----
-  vec2 tuv = gl_FragCoord.xy / resolution.xy;       // fresh 0..1 coords
-  tuv.y = 1.0 - tuv.y;                              // texture rows upload top-first
-  vec4 txt = mix(texture2D(uTextPrev, tuv), texture2D(uText, tuv), uTextMix);
-  col = mix(col, txt.rgb, clamp(txt.a, 0.0, 1.0));
+  // ---- "live agent" text layer: a typed terminal conversation ----
+  // The song sends a 2-line white image per exchange (command on top, reply
+  // below). The shader tints the command GREEN and the reply BLUE, and TYPES
+  // each line in left-to-right using uTextMix as the per-text clock (0..1 over
+  // its fade), with a thinking pause between the lines and a blinking cursor.
+  vec2 tuv = gl_FragCoord.xy / resolution.xy;      // fresh 0..1 coords
+  tuv.y = 1.0 - tuv.y;                             // texture rows upload top-first
+  float p = uTextMix;                              // typing clock, 0..1 then holds
+  bool isReply = tuv.y > 0.5;                      // bottom line = agent reply
+  float e1 = clamp(p / 0.42, 0.0, 1.0);           // command types over 0.00..0.42
+  float e2 = clamp((p - 0.55) / 0.42, 0.0, 1.0);  // reply types over 0.55..0.97
+  float x0 = 0.03, x1 = 0.95;
+  float revealX = x0 + (isReply ? e2 : e1) * (x1 - x0);
+  float typed = 1.0 - smoothstep(revealX - 0.004, revealX + 0.004, tuv.x);  // 1 left of cursor
+  vec4 tcur = texture2D(uText, tuv);
+  vec3 tcol = isReply ? vec3(0.30, 0.64, 1.0) : vec3(0.28, 1.0, 0.44);      // blue reply / green cmd
+  // dilated dark halo so the thin glyphs read over the bright crowd
+  float halo = tcur.a;
+  for (int i = 0; i < 8; i++) {
+    float ha = 0.7853982 * float(i);
+    halo = max(halo, texture2D(uText, tuv + vec2(cos(ha), sin(ha)) * 0.006).a);
+  }
+  halo *= typed;
+  col = mix(col, vec3(0.0), clamp(halo, 0.0, 1.0) * 0.82);   // scrim/outline behind typed glyphs
+  col = mix(col, tcol, clamp(tcur.a * typed, 0.0, 1.0));     // the typed, coloured glyphs
+  // blinking block cursor at the edge of whichever line is currently typing
+  bool active = isReply ? (p >= 0.55 && p < 0.99) : (p < 0.42);
+  float lineY = isReply ? 0.545 : 0.455;
+  if (active && step(0.5, fract(time * 2.2)) > 0.5 &&
+      tuv.x > revealX && tuv.x < revealX + 0.013 && abs(tuv.y - lineY) < 0.026) {
+    // only draw the cursor when real text sits just left of the edge, so it
+    // parks at the end of a short line instead of floating off into empty space
+    float near = 0.0;
+    for (int k = 1; k <= 6; k++) {
+      near = max(near, texture2D(uText, vec2(revealX - float(k) * 0.01, tuv.y)).a);
+    }
+    if (near > 0.05) col = mix(col, tcol, 0.9);
+  }
 
   gl_FragColor = vec4(col, 1.0);
 }
