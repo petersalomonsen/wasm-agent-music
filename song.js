@@ -842,7 +842,6 @@ createTrack(8).play([
 // === 6 variation rounds (all with drums) ===
 // 1-2: warm pad + lead + intro D bass · 2 adds jumppad · 3-4: italo bass (chords) · 5-6: intro D bass, descending A# C G
 for (let round = 0; round < 6; round++) {
-    if (round === 5) hideText({ fade: 1 });
     if (round < 5) finaleWarmpad();   // final round uses the recorded finaleStrings() on ch6 instead
     if (round === 4) finaleSolo();   // recorded solo lead — spans the last two rounds (after the italo-disco)
     finaleLead(round === 5);
@@ -851,7 +850,17 @@ for (let round = 0; round < 6; round++) {
         finaleHats();
         if (round === 1) finaleBackbeatFill();   // jumppad in → backbeat + rolling fill into the italo section
         finaleIntroBass();
-        await finaleKick();
+        if (round === 0) {
+            await kick.steps(4, [ c2, , , , ].repeat(27));   // 28 beats — to beat 288
+            agentPrompt("punch in the '84 brass stabs", "jump-pad brass - stacked on top");   // one bar before the brass enters
+            await kick.steps(4, [ c2, , , , ].repeat(3));    // 4 beats — to beat 292
+        } else {   // round 1
+            await kick.steps(4, [ c2, , , , ].repeat(15));   // 16 beats — to beat 308
+            agentPrompt("let the snare roll build it up", "16th-note roll - crescendo");   // ahead of the fill roll
+            await kick.steps(4, [ c2, , , , ].repeat(11));   // 12 beats — to beat 320
+            agentPrompt("flip the bass to italo-disco", "octave pump - four-on-the-floor");   // one bar before the italo section
+            await kick.steps(4, [ c2, , , , ].repeat(3));    // 4 beats — to beat 324
+        }
     } else if (round <= 3) {
         italoHats(32);
         italoSnareFillA(32);   // both italo rounds get the simple fill (neither hands off to a new section)
@@ -867,7 +876,9 @@ for (let round = 0; round < 6; round++) {
         finaleHats();
         finaleBackbeat(32);    // snare backbeat returns after the italo section
         finaleDescBass();
-        await finaleKick();
+        await kick.steps(4, [ c2, , , , ].repeat(27));   // 28 beats — to beat 416
+        agentPrompt("now bring it home - big final chord", "strings + stabs - landing it");   // one bar before the closing round
+        await kick.steps(4, [ c2, , , , ].repeat(3));    // 4 beats — to beat 420
     } else {
         // final round: drop hats & snare for the last 4 beats — only the kick plays, on the jump-pad stabs
         finaleStrings();       // recorded string/warm-pad take, featured in the final round
@@ -878,6 +889,7 @@ for (let round = 0; round < 6; round++) {
     }
 }
 
+hideText({ fade: 2 });   // fade the final prompt out as the last chord rings down
 await waitDuration(4);   // 4 beats of silence so instruments/reverb fully decay before the loop
 
 loopHere();
