@@ -340,6 +340,7 @@ createTrack(4).play([[ 0.56, d6(0.44, 69) ],
 
 // Playthroughs 3 & 4 - italo-disco bass instead of intro bass
 setVisual('uItalo', 1);   // italo-disco: arms go double-time, flipping opposite every beat (through the breakdown)
+agentPrompt("dancers - pump the arms double-time", "arms flipping opposite on every beat");   // the drop: italo arm move introduced
 for (let r = 0; r < 2; r++) {
     playJumpChords();
     italoHats(16);
@@ -844,6 +845,7 @@ createTrack(8).play([
 // 1-2: warm pad + lead + intro D bass · 2 adds jumppad · 3-4: italo bass (chords) · 5-6: intro D bass, descending A# C G
 for (let round = 0; round < 6; round++) {
     if (round === 0) { setVisual('uItalo', 0); setVisual('uRunning', 1, 3.0); }   // finale opens four-on-the-floor; dancers turn sideways into the running man
+    if (round === 0) agentPrompt("turn them sideways - running man", "profile stance - stepping on the beat");   // running man move introduced
     if (round === 2) { setVisual('uItalo', 1); setVisual('uRunning', 0, 2.0); }   // italo bass returns → double-time arms; running man ends, camera resumes its orbit
     if (round === 4) setVisual('uItalo', 0);   // back to four-on-the-floor for the close
     if (round < 5) finaleWarmpad();   // final round uses the recorded finaleStrings() on ch6 instead
@@ -880,9 +882,7 @@ for (let round = 0; round < 6; round++) {
         finaleHats();
         finaleBackbeat(32);    // snare backbeat returns after the italo section
         finaleDescBass();
-        await kick.steps(4, [ c2, , , , ].repeat(27));   // 28 beats — to beat 416
-        agentPrompt("now bring it home - big final chord", "strings + stabs - landing it");   // one bar before the closing round
-        await kick.steps(4, [ c2, , , , ].repeat(3));    // 4 beats — to beat 420
+        await kick.steps(4, [ c2, , , , ].repeat(31));   // 32 beats — to beat 420 (finale prompt moved down to just before the two final chords)
     } else {
         // final round: drop hats & snare for the last 4 beats — only the kick plays, on the jump-pad stabs
         finaleStrings();       // recorded string/warm-pad take, featured in the final round
@@ -892,7 +892,9 @@ for (let round = 0; round < 6; round++) {
         finaleKickEnding();        // kick pattern (32 beats): every beat to 28, then only the two stabs (beats 28 & 29.5)
         // snap the dancers to a pose on each of the two final chord stabs, then hold — no in-between dance.
         // (waitDuration is the beat-keeper here so the kick pattern stays exactly as recorded.)
-        await waitDuration(28);    // to the first stab (round-beat 28)
+        await waitDuration(24);    // to round-beat 24 (beat 444) — one bar before the two final chords
+        agentPrompt("land the last two chords - freeze the pose", "two stabs - dancers strike it and hold");   // moved here from beat 416; names the final pose
+        await waitDuration(4);     // to the first stab (round-beat 28, beat 448)
         setVisual('uEndPose', 1);  // stab 1: freeze into pose A
         await waitDuration(1.5);   // to the second stab (round-beat 29.5)
         setVisual('uEndPose', 2);  // stab 2: snap to the mirrored pose B, then hold
