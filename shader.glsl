@@ -39,6 +39,28 @@ float sdSeg(vec2 p, vec2 a, vec2 b) {
   return length(pa - ba * h);
 }
 
+// smooth minimum — rounds off the joint where two shapes meet
+float smin(float a, float b, float k) {
+  float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
+  return mix(b, a, h) - k * h * (1.0 - h);
+}
+
+// tapered capsule: solid limb, radius ra at a shrinking to rb at b
+float capT(vec2 p, vec2 a, vec2 b, float ra, float rb) {
+  vec2 pa = p - a, ba = b - a;
+  float h = clamp(dot(pa, ba) / max(dot(ba, ba), 1e-6), 0.0, 1.0);
+  return length(pa - ba * h) - mix(ra, rb, h);
+}
+
+// oriented solid ellipse (approx signed distance); dir = unit major-axis direction
+float sdEll(vec2 p, vec2 c, vec2 dir, float ha, float hb) {
+  vec2 rel = p - c;
+  vec2 q = vec2(dot(rel, dir), dot(rel, vec2(-dir.y, dir.x)));
+  vec2 n = vec2(q.x / ha, q.y / hb);
+  float e = length(n);
+  return (e - 1.0) * min(ha, hb);
+}
+
 // Project a dancer's local joint (2D, in the figure's own plane) to the screen.
 // The figure stands in the WORLD facing a fixed direction (sideways axis WX,
 // up = world up), so as the camera orbits we see it from different angles —
@@ -218,17 +240,36 @@ void main() {
           vec2 PeR = jp(eRo, base, WX, ro, fwd, rgt, upv, focal);
           vec2 PnR = jp(nRo, base, WX, ro, fwd, rgt, upv, focal);
 
-          float lwf = clamp(0.05 * sca, 0.0016, 0.03);   // thinner as the camera gets farther
+          // ---- solid body: tapered capsules + torso/pelvis ellipses, smooth-blended ----
+          float S = sca;
+          float k = 0.040 * S;                       // limb-blend radius (rounds knees/elbows/shoulders)
+          vec2 spineDir = Psh - Php;
+          float spineLen = max(length(spineDir), 1e-4);
+          spineDir /= spineLen;
+          vec2 hipDir = PhR - PhL;
+          hipDir = (length(hipDir) > 1e-4) ? normalize(hipDir) : vec2(1.0, 0.0);
+
           float dm = 1e9;
-          dm = min(dm, sdSeg(uv, Php, Psh));
-          dm = min(dm, sdSeg(uv, Psh, Phb));
-          dm = min(dm, sdSeg(uv, PhL, PhR));
-          dm = min(dm, sdSeg(uv, PhL, PkL)); dm = min(dm, sdSeg(uv, PkL, PfL));
-          dm = min(dm, sdSeg(uv, PhR, PkR)); dm = min(dm, sdSeg(uv, PkR, PfR));
-          dm = min(dm, sdSeg(uv, PsL, PeL)); dm = min(dm, sdSeg(uv, PeL, PnL));
-          dm = min(dm, sdSeg(uv, PsR, PeR)); dm = min(dm, sdSeg(uv, PeR, PnR));
-          dm = min(dm, abs(length(uv - Phc) - 0.085 * sca));     // head — always a circle
-          float cov = (1.0 - smoothstep(lwf, lwf + aa, dm)) * mix(crowdFade, uHero, isHero);
+          // legs — thick at the hip, tapering to the ankle
+          dm = smin(dm, capT(uv, PhL, PkL, 0.050 * S, 0.037 * S), k);
+          dm = smin(dm, capT(uv, PkL, PfL, 0.037 * S, 0.024 * S), k);
+          dm = smin(dm, capT(uv, PhR, PkR, 0.050 * S, 0.037 * S), k);
+          dm = smin(dm, capT(uv, PkR, PfR, 0.037 * S, 0.024 * S), k);
+          // arms — thick at the shoulder, tapering to the wrist
+          dm = smin(dm, capT(uv, PsL, PeL, 0.050 * S, 0.031 * S), k);
+          dm = smin(dm, capT(uv, PeL, PnL, 0.031 * S, 0.019 * S), k);
+          dm = smin(dm, capT(uv, PsR, PeR, 0.050 * S, 0.031 * S), k);
+          dm = smin(dm, capT(uv, PeR, PnR, 0.031 * S, 0.019 * S), k);
+          // neck
+          dm = smin(dm, capT(uv, Psh, Phb, 0.038 * S, 0.030 * S), k);
+          // torso ellipse (along the spine) and a smaller pelvis ellipse (across the hips)
+          vec2 torsoC = mix(Php, Psh, 0.53);
+          dm = smin(dm, sdEll(uv, torsoC, spineDir, 0.50 * spineLen + 0.02 * S, 0.086 * S), k);
+          dm = smin(dm, sdEll(uv, Php, hipDir, 0.072 * S, 0.056 * S), k);
+          // head — kept a disc, only a light blend so the jaw meets the neck
+          dm = smin(dm, length(uv - Phc) - 0.085 * S, 0.018 * S);
+
+          float cov = smoothstep(aa, -aa, dm) * mix(crowdFade, uHero, isHero);
           if (cov > 0.01 && zc < bestZ) {                        // nearest covering dancer wins
             bestZ = zc; bestCov = cov;
             vec3 dc = 0.55 + 0.45 * cos(6.2831 * hash21(vec2(fr + 3.0, fc - 2.0)) + vec3(0.0, 2.1, 4.2));
