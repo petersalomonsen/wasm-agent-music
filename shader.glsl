@@ -167,11 +167,16 @@ void main() {
   vec3 ro     = mix(roDolly, roTour, tour);
   vec3 lookAt = mix(lookDolly, lookTour, tour);
 
-  // running-man finale rounds: lock to a fixed theatre seat — elevated, mid-house, looking down at
-  // the stage from the side. The dancers all face +x, so this seat sees them in clean profile.
+  // running-man finale rounds: sit in the theatre and drift slowly between rows — the front row is
+  // low and close (near eye-level, so the front dancers loom and hide the rows behind), the back
+  // rows are high and far (up over everyone, seeing the whole stage). The dancers all face +x, so
+  // every seat sees them in clean profile.
   float seat = clamp(uRunning, 0.0, 1.0);
-  ro     = mix(ro,     vec3(0.0, 4.0, 9.4), seat);
-  lookAt = mix(lookAt, vec3(0.0, 1.05, -1.4), seat);
+  float row = 0.5 + 0.5 * sin(t * 0.30);                       // 0 = front row .. 1 = back row
+  vec3 roSeat   = mix(vec3(0.0, 1.5, 6.0),  vec3(0.0, 5.6, 13.2), row);
+  vec3 lookSeat = mix(vec3(0.0, 1.25, -1.0), vec3(0.0, 0.55, -1.6), row);
+  ro     = mix(ro,     roSeat,   seat);
+  lookAt = mix(lookAt, lookSeat, seat);
 
   float focal = 1.8;
   vec3 fwd = normalize(lookAt - ro);

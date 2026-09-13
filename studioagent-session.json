@@ -917,6 +917,10 @@
   {
    "role": "user",
    "text": "let's not have the camera completely locked during the running man. let's move a bit back and forwards in the theatre seat rows ( meaning that we will see straight on them from the front row - and only see the dancers in the front, while when moving to the back rows, we will see all dancers since we are higher up )."
+  },
+  {
+   "role": "agent",
+   "text": "Nice touch — that gives the theatre view life and reveals the depth staging. I'll make the seat **drift slowly between the front row and the back rows**: front row = low and close (near eye-level, so the front dancers loom and hide those behind), back rows = high and far (looking down over everyone). A slow sine walks between the two while the running man is on.Let me look at the extremes — back-row (high, see everyone) and front-row (low, front dancers loom).That's the effect exactly:\n\n- **t=130.9 & 151.8 (back rows)**: camera high and far — you look down over the whole stage and see *all* the dancers spread across the floor.\n- **t=141.4 (front row)**: camera low and close, near eye-level — the front dancers **loom large** and fill the view, mostly hiding the rows behind, seen straight-on.\n- **t=136**: mid-drift between the two.\n\nThe seat now slowly walks back and forth through the theatre rows (a ~21s sine) for the whole running-man section, coupling height with distance so moving back also lifts you up over everyone. When round 2 hits, `uRunning` ramps off and the orbit resumes as before.\n\nThis was a shader-only change — music untouched, compiled and live. If the drift feels too fast or too far, the speed is the `t * 0.30` and the extremes are the two front/back vectors."
   }
  ]
 }
